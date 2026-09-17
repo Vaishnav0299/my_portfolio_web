@@ -1,7 +1,7 @@
 {
   "buildCommand": "pnpm --filter portfolio-frontend build",
   "outputDirectory": "portfolio-frontend/dist",
-  "installCommand": "npm install -g pnpm && pnpm install",
+  "installCommand": "npm install -g pnpm && pnpm install --no-frozen-lockfile",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
