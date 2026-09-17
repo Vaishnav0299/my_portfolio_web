@@ -9,6 +9,7 @@
     "esModuleInterop": true
   },
   "include": [
+    "api/**/*",
     "portfolio-backend/src/**/*"
   ],
   "exclude": [
