@@ -27,3 +27,13 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Lockfiles (Monorepo uses pnpm-lock.yaml)
+package-lock.json
+yarn.lock
+
+# AI Agent Context & Rules
+AGENTS.md
+GEMINI.md
+.agents/
+.gemini/
