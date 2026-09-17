@@ -7,52 +7,18 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@hono/node-server':
-        specifier: ^1.12.0
-        version: 1.19.17(hono@4.12.33)
-      '@hono/zod-validator':
-        specifier: ^0.4.1
-        version: 0.4.3(hono@4.12.33)(zod@3.25.76)
-      '@portfolio/shared':
-        specifier: workspace:*
-        version: link:packages/shared
-      bcryptjs:
-        specifier: ^2.4.3
-        version: 2.4.3
-      dotenv:
-        specifier: ^16.4.5
-        version: 16.6.1
-      drizzle-orm:
-        specifier: ^0.31.4
-        version: 0.31.4(@types/react@18.3.31)(postgres@3.4.9)(react@18.3.1)
-      hono:
-        specifier: ^4.4.7
-        version: 4.12.33
-      jsonwebtoken:
-        specifier: ^9.0.2
-        version: 9.0.3
-      postgres:
-        specifier: ^3.4.4
-        version: 3.4.9
-      zod:
-        specifier: ^3.23.8
-        version: 3.25.76
     devDependencies:
-      '@types/bcryptjs':
-        specifier: ^2.4.6
-        version: 2.4.6
-      '@types/jsonwebtoken':
-        specifier: ^9.0.6
-        version: 9.0.10
       '@types/node':
         specifier: ^20.14.10
         version: 20.19.43
+      three:
+        specifier: ^0.185.1
+        version: 0.185.1
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
 
-  apps/api:
+  portfolio-backend:
     dependencies:
       '@hono/node-server':
         specifier: ^1.12.0
@@ -60,9 +26,6 @@ importers:
       '@hono/zod-validator':
         specifier: ^0.4.1
         version: 0.4.3(hono@4.12.33)(zod@3.25.76)
-      '@portfolio/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
@@ -104,11 +67,8 @@ importers:
         specifier: ^5.4.5
         version: 5.9.3
 
-  apps/web:
+  portfolio-frontend:
     dependencies:
-      '@portfolio/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       dexie:
         specifier: ^4.0.8
         version: 4.4.4
@@ -124,9 +84,6 @@ importers:
       react-router-dom:
         specifier: ^7.18.1
         version: 7.18.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      three:
-        specifier: ^0.185.1
-        version: 0.185.1
     devDependencies:
       '@types/react':
         specifier: ^18.2.66
@@ -140,16 +97,6 @@ importers:
       vite:
         specifier: ^5.1.6
         version: 5.4.21(@types/node@20.19.43)
-
-  packages/shared:
-    dependencies:
-      zod:
-        specifier: ^3.23.8
-        version: 3.25.76
-    devDependencies:
-      typescript:
-        specifier: ^5.4.5
-        version: 5.9.3
 
 packages:
 

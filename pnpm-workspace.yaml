@@ -1,5 +1,5 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+  - 'portfolio-frontend'
+  - 'portfolio-backend'
 allowBuilds:
   esbuild: true

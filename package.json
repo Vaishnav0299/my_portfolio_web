@@ -1,34 +1,19 @@
 {
-  "name": "portfolio-v2",
+  "name": "portfolio",
   "private": true,
   "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "dev": "pnpm --parallel --filter \"@portfolio/*\" dev",
-    "dev:web": "pnpm --filter @portfolio/web dev",
-    "dev:api": "pnpm --filter @portfolio/api dev",
-    "build": "pnpm --filter @portfolio/shared build && pnpm --filter @portfolio/web build",
-    "preview": "pnpm --filter @portfolio/web preview",
-    "build:api": "pnpm --filter @portfolio/api build",
-    "seed": "pnpm --filter @portfolio/api seed",
+    "dev": "pnpm --parallel --filter \"portfolio-*\" dev",
+    "dev:frontend": "pnpm --filter portfolio-frontend dev",
+    "dev:backend": "pnpm --filter portfolio-backend dev",
+    "build": "pnpm --filter portfolio-backend build && pnpm --filter portfolio-frontend build",
+    "build:frontend": "pnpm --filter portfolio-frontend build",
+    "build:backend": "pnpm --filter portfolio-backend build",
+    "seed": "pnpm --filter portfolio-backend seed",
     "lint": "pnpm -r lint"
   },
-  "dependencies": {
-    "@portfolio/shared": "workspace:*",
-    "@hono/node-server": "^1.12.0",
-    "@hono/zod-validator": "^0.4.1",
-    "bcryptjs": "^2.4.3",
-    "drizzle-orm": "^0.31.4",
-    "dotenv": "^16.4.5",
-    "hono": "^4.4.7",
-    "jsonwebtoken": "^9.0.2",
-    "postgres": "^3.4.4",
-    "zod": "^3.23.8"
-  },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.6",
-    "@types/node": "^20.14.10",
     "typescript": "^5.4.5"
   }
 }

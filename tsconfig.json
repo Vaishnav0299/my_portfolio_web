@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "portfolio-backend/src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "portfolio-backend/node_modules",
+    "portfolio-frontend"
+  ]
+}
+

@@ -1,14 +1,8 @@
 {
-  "buildCommand": "pnpm --filter @portfolio/shared build && pnpm --filter @portfolio/web build",
-  "outputDirectory": "apps/web/dist",
+  "buildCommand": "pnpm --filter portfolio-frontend build",
+  "outputDirectory": "portfolio-frontend/dist",
   "installCommand": "npm install -g pnpm && pnpm install",
-  "functions": {
-    "api/index.ts": {
-      "includeFiles": "{apps/api/**,packages/shared/**}"
-    }
-  },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index" },
-    { "source": "/(.*)",     "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
