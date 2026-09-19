@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { serve } from '@hono/node-server';
 import app from './index.js';
 import { initDbSync, stopDbSync } from './db/dbSync.js';
+import { warmUpDatabase } from './db/client.js';
 
 const port = Number(process.env.PORT) || 3002;
 
@@ -13,6 +14,9 @@ serve({
   port,
   hostname: '127.0.0.1',
 });
+
+// Pre-warm database connection asynchronously so initial requests don't suffer cold start latency
+warmUpDatabase().catch(() => {});
 
 // Graceful shutdown
 process.on('SIGTERM', () => { stopDbSync(); process.exit(0); });
