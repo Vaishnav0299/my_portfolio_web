@@ -11,6 +11,10 @@
     "build:frontend": "pnpm --filter portfolio-frontend build",
     "build:backend": "pnpm --filter portfolio-backend build",
     "seed": "pnpm --filter portfolio-backend seed",
+    "sync": "python scripts/sync_github.py --fetch",
+    "sync:github": "python scripts/sync_github.py",
+    "sync:github:view": "python scripts/sync_github.py --view",
+    "sync:github:interactive": "python scripts/sync_github.py --interactive",
     "lint": "pnpm -r lint"
   },
   "dependencies": {

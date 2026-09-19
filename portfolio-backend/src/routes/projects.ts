@@ -1,4 +1,4 @@
-﻿import { Hono } from 'hono';
+import { Hono } from 'hono';
 import { eq } from 'drizzle-orm';
 import * as crypto from 'node:crypto';
 import { db } from '../db/client.js';
@@ -14,16 +14,22 @@ const projectsRouter = new Hono();
 projectsRouter.get('/', async (c) => {
   if (isDbConfigured) {
     try {
-      const rows = await db
-        .select()
-        .from(projects)
-        .orderBy(projects.sortOrder);
-      if (rows.length > 0) return c.json({ success: true, data: rows });
+      const rows = await db.select().from(projects).orderBy(projects.sortOrder);
+      if (rows && rows.length > 0) {
+        localStore.projects = rows.map(r => ({
+          ...r,
+          features: (r.features as string[]) || [],
+          stack: (r.stack as string[]) || [],
+          live: r.live ?? '',
+          createdAt: r.createdAt?.toISOString(),
+          updatedAt: r.updatedAt?.toISOString(),
+        })) as any;
+        return c.json({ success: true, data: localStore.projects });
+      }
     } catch (err) {
-      console.warn('[API/projects] Database error, falling back to local store:', (err as Error).message);
+      console.warn('[API/projects] DB query failed, serving local store:', (err as Error).message);
     }
   }
-
   return c.json({ success: true, data: localStore.projects });
 });
 
@@ -35,17 +41,27 @@ projectsRouter.get('/:id', async (c) => {
 
   if (isDbConfigured) {
     try {
-      const [row] = await db.select().from(projects).where(eq(projects.id, id));
-      if (row) return c.json({ success: true, data: row });
+      const [foundDb] = await db.select().from(projects).where(eq(projects.id, id));
+      if (foundDb) {
+        const item = {
+          ...foundDb,
+          features: (foundDb.features as string[]) || [],
+          stack: (foundDb.stack as string[]) || [],
+          live: foundDb.live ?? '',
+          createdAt: foundDb.createdAt?.toISOString(),
+          updatedAt: foundDb.updatedAt?.toISOString(),
+        };
+        return c.json({ success: true, data: item });
+      }
     } catch (err) {
-      console.warn('[API/projects/:id] Database query failed, checking local store:', (err as Error).message);
+      console.warn('[API/projects/:id] DB query failed, checking local store:', (err as Error).message);
     }
   }
 
-  const project = localStore.projects.find(p => p.id === id);
-  if (!project) return c.json({ success: false, error: 'Project not found' }, 404);
+  const found = localStore.projects.find(p => p.id === id);
+  if (found) return c.json({ success: true, data: found });
 
-  return c.json({ success: true, data: project });
+  return c.json({ success: false, error: 'Project not found' }, 404);
 });
 
 // -- ADMIN: Require authentication --------------------------------------------
@@ -66,8 +82,10 @@ projectsRouter.post('/admin', async (c) => {
     try {
       const [created] = await db.insert(projects).values(body as any).returning();
       await recordOperation(opId, '/api/projects/admin', 'POST');
-      console.log(`[Admin/Projects] Created project "${body.name}" (opId: ${opId})`);
-      if (created) return c.json({ success: true, data: created }, 201);
+      if (created) {
+        localStore.projects.push(created as any);
+        return c.json({ success: true, data: created }, 201);
+      }
     } catch (err) {
       console.warn('[API/projects] Database insert failed, saving to local store:', (err as Error).message);
     }
@@ -90,13 +108,23 @@ projectsRouter.post('/admin', async (c) => {
     stars: body.stars ?? 0,
     status: body.status,
     sortOrder: body.sortOrder ?? localStore.projects.length + 1,
+    tagline: body.tagline,
+    problem: body.problem,
+    solution: body.solution,
+    metrics: body.metrics as any,
+    mockup: body.mockup,
+    role: body.role,
+    period: body.period,
+    highlights: body.highlights,
+    challenges: body.challenges,
+    accent: body.accent,
+    emoji: body.emoji,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 
   localStore.projects.push(newProject);
   await recordOperation(opId, '/api/projects/admin', 'POST');
-  console.log(`[Admin/Projects] Created local project "${body.name}" (opId: ${opId})`);
   return c.json({ success: true, data: newProject }, 201);
 });
 
@@ -122,8 +150,12 @@ projectsRouter.put('/admin/:id', async (c) => {
         .where(eq(projects.id, id))
         .returning();
       await recordOperation(opId, `/api/projects/admin/${id}`, 'PUT');
-      console.log(`[Admin/Projects] Updated project id=${id} (opId: ${opId})`);
-      if (updated) return c.json({ success: true, data: updated });
+      if (updated) {
+        const idx = localStore.projects.findIndex(p => p.id === id);
+        if (idx !== -1) localStore.projects[idx] = updated as any;
+        else localStore.projects.push(updated as any);
+        return c.json({ success: true, data: updated });
+      }
     } catch (err) {
       console.warn('[API/projects] Database update failed, updating local store:', (err as Error).message);
     }
@@ -139,7 +171,6 @@ projectsRouter.put('/admin/:id', async (c) => {
   } as LocalProject;
 
   await recordOperation(opId, `/api/projects/admin/${id}`, 'PUT');
-  console.log(`[Admin/Projects] Updated local project id=${id} (opId: ${opId})`);
   return c.json({ success: true, data: localStore.projects[index] });
 });
 
@@ -154,7 +185,6 @@ projectsRouter.delete('/admin/:id', async (c) => {
   if (isDbConfigured) {
     try {
       await db.delete(projects).where(eq(projects.id, id));
-      console.log(`[Admin/Projects] Deleted project id=${id} from Supabase`);
     } catch (err) {
       console.warn('[API/projects] Database delete failed, using local store:', (err as Error).message);
     }
@@ -162,7 +192,6 @@ projectsRouter.delete('/admin/:id', async (c) => {
 
   localStore.projects = localStore.projects.filter(p => p.id !== id);
   await recordOperation(opId, `/api/projects/admin/${id}`, 'DELETE');
-  console.log(`[Admin/Projects] Recorded DELETE /api/projects/admin/${id} to syncLog (opId: ${opId})`);
 
   return c.json({ success: true, message: `Project ${id} deleted` });
 });

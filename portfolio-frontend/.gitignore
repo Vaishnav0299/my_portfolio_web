@@ -1,0 +1,22 @@
+# Frontend dependencies
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Environment & Secrets
+.env
+.env.*
+.env.local
+!.env.example
+
+# Lockfiles
+package-lock.json
+
+# Logs & Cache
+*.log
+.eslintcache
+
+# OS Files
+.DS_Store
+Thumbs.db

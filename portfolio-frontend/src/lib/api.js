@@ -47,19 +47,31 @@ async function apiFetch(path, options = {}, requiresAuth = false) {
   return data;
 }
 
-// ── Public API methods ───────────────────────────────────────────────────────
+// ── Public & Admin API methods ───────────────────────────────────────────────
 
 export const api = {
   // Health
   health: () => apiFetch('/health'),
 
+  // Site Configuration & Feature Flags
+  getConfig:    () => apiFetch('/config'),
+  updateConfig: (body) => apiFetch('/config/admin', { method: 'PUT', body: JSON.stringify(body) }, true),
+
   // Data endpoints (public)
-  getProjects:  () => apiFetch('/projects'),
-  getProject:   (id) => apiFetch(`/projects/${id}`),
-  getSkills:    () => apiFetch('/skills'),
-  getTimeline:  () => apiFetch('/timeline'),
-  getBio:       () => apiFetch('/bio'),
-  sendContact:  (body) => apiFetch('/contact', { method: 'POST', body: JSON.stringify(body) }),
+  getProjects:      () => apiFetch('/projects'),
+  getProject:       (id) => apiFetch(`/projects/${id}`),
+  getSkills:        () => apiFetch('/skills'),
+  getTimeline:      () => apiFetch('/timeline'),
+  getBio:           () => apiFetch('/bio'),
+  getServices:      () => apiFetch('/services'),
+  getTestimonials:  () => apiFetch('/testimonials'),
+  getBlogPosts:     () => apiFetch('/blog'),
+  getBlogPost:      (slug) => apiFetch(`/blog/${slug}`),
+  getFaqs:          () => apiFetch('/faq'),
+  getNow:           () => apiFetch('/meta/now'),
+  getUses:          () => apiFetch('/meta/uses'),
+  getGithubStats:   () => apiFetch('/meta/github'),
+  sendContact:      (body) => apiFetch('/contact', { method: 'POST', body: JSON.stringify(body) }),
 
   // Auth
   login:  (email, password) => apiFetch('/auth/login',  { method: 'POST', body: JSON.stringify({ email, password }) }),
@@ -83,6 +95,40 @@ export const api = {
   // Admin — Bio
   updateBio: (body) => apiFetch('/bio/admin', { method: 'PUT', body: JSON.stringify(body) }, true),
 
+  // Admin — Services
+  createService: (body) => apiFetch('/services/admin', { method: 'POST', body: JSON.stringify(body) }, true),
+  updateService: (id, body) => apiFetch(`/services/admin/${id}`, { method: 'PUT', body: JSON.stringify(body) }, true),
+  deleteService: (id) => apiFetch(`/services/admin/${id}`, { method: 'DELETE' }, true),
+
+  // Admin — Testimonials
+  createTestimonial: (body) => apiFetch('/testimonials/admin', { method: 'POST', body: JSON.stringify(body) }, true),
+  updateTestimonial: (id, body) => apiFetch(`/testimonials/admin/${id}`, { method: 'PUT', body: JSON.stringify(body) }, true),
+  deleteTestimonial: (id) => apiFetch(`/testimonials/admin/${id}`, { method: 'DELETE' }, true),
+
+  // Admin — Blog
+  createBlogPost: (body) => apiFetch('/blog/admin', { method: 'POST', body: JSON.stringify(body) }, true),
+  updateBlogPost: (id, body) => apiFetch(`/blog/admin/${id}`, { method: 'PUT', body: JSON.stringify(body) }, true),
+  deleteBlogPost: (id) => apiFetch(`/blog/admin/${id}`, { method: 'DELETE' }, true),
+
+  // Admin — FAQs
+  createFaq: (body) => apiFetch('/faq/admin', { method: 'POST', body: JSON.stringify(body) }, true),
+  updateFaq: (id, body) => apiFetch(`/faq/admin/${id}`, { method: 'PUT', body: JSON.stringify(body) }, true),
+  deleteFaq: (id) => apiFetch(`/faq/admin/${id}`, { method: 'DELETE' }, true),
+
+  // Admin — Meta: Now & Uses
+  updateNow:     (body) => apiFetch('/meta/admin/now', { method: 'PUT', body: JSON.stringify(body) }, true),
+  addNowItem:    (body) => apiFetch('/meta/admin/now', { method: 'POST', body: JSON.stringify(body) }, true),
+  deleteNowItem: (index) => apiFetch(`/meta/admin/now/${index}`, { method: 'DELETE' }, true),
+  updateUses:    (body) => apiFetch('/meta/admin/uses', { method: 'PUT', body: JSON.stringify(body) }, true),
+
+  // Admin — Contact Messages
+  getMessages:   () => apiFetch('/contact/messages', {}, true),
+  deleteMessage: (id) => apiFetch(`/contact/messages/${id}`, { method: 'DELETE' }, true),
+
   // Offline sync — flush queue
   syncBatch: (operations) => apiFetch('/sync', { method: 'POST', body: JSON.stringify({ operations }) }, true),
+
+  // Manual DB Sync — force sync between Supabase and local cache
+  syncDb: () => apiFetch('/sync/db', { method: 'POST' }, true),
+  getDbSyncStatus: () => apiFetch('/sync/db', { method: 'GET' }, true),
 };

@@ -5,9 +5,7 @@ import { initDbSync, stopDbSync } from './db/dbSync.js';
 
 const port = Number(process.env.PORT) || 3002;
 
-// Sync localStore from database before accepting requests
-await initDbSync();
-
+// Server listens immediately without triggering sync loops on file save
 console.log(`🚀 Hono API dev server listening at http://localhost:${port}`);
 
 serve({

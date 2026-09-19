@@ -7,8 +7,14 @@ import projectsRouter from './routes/projects.js';
 import skillsRouter   from './routes/skills.js';
 import timelineRouter from './routes/timeline.js';
 import bioRouter      from './routes/bio.js';
-import contactRouter  from './routes/contact.js';
-import syncRouter     from './routes/sync.js';
+import contactRouter      from './routes/contact.js';
+import syncRouter         from './routes/sync.js';
+import servicesRouter     from './routes/services.js';
+import testimonialsRouter from './routes/testimonials.js';
+import blogRouter         from './routes/blog.js';
+import metaRouter         from './routes/meta.js';
+import configRouter       from './routes/config.js';
+import faqRouter          from './routes/faq.js';
 
 const app = new Hono().basePath('/api');
 
@@ -28,14 +34,20 @@ app.use('*', cors({
 }));
 
 // ── Routes ───────────────────────────────────────────────────────────────────
-app.route('/health',   healthRouter);
-app.route('/auth',     authRouter);
-app.route('/projects', projectsRouter);
-app.route('/skills',   skillsRouter);
-app.route('/timeline', timelineRouter);
-app.route('/bio',      bioRouter);
-app.route('/contact',  contactRouter);
-app.route('/sync',     syncRouter);
+app.route('/health',       healthRouter);
+app.route('/auth',         authRouter);
+app.route('/projects',     projectsRouter);
+app.route('/skills',       skillsRouter);
+app.route('/timeline',     timelineRouter);
+app.route('/bio',          bioRouter);
+app.route('/contact',      contactRouter);
+app.route('/sync',         syncRouter);
+app.route('/services',     servicesRouter);
+app.route('/testimonials', testimonialsRouter);
+app.route('/blog',         blogRouter);
+app.route('/meta',         metaRouter);
+app.route('/config',       configRouter);
+app.route('/faq',          faqRouter);
 
 // ── 404 fallback ────────────────────────────────────────────────────────────
 app.notFound(notFound);

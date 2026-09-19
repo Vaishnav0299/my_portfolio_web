@@ -1,4 +1,4 @@
-﻿import { Hono } from 'hono';
+import { Hono } from 'hono';
 import { eq } from 'drizzle-orm';
 import * as crypto from 'node:crypto';
 import { db } from '../db/client.js';
@@ -15,12 +15,26 @@ timelineRouter.get('/', async (c) => {
   if (isDbConfigured) {
     try {
       const rows = await db.select().from(timeline).orderBy(timeline.sortOrder);
-      if (rows.length > 0) return c.json({ success: true, data: rows });
+      if (rows && rows.length > 0) {
+        localStore.timeline = rows.map(r => ({
+          id: r.id,
+          time: r.time,
+          title: r.title,
+          inst: r.inst,
+          desc: r.desc,
+          type: (r.type as any) ?? 'work',
+          location: r.location ?? undefined,
+          achievements: (r.achievements as any) ?? undefined,
+          stack: (r.stack as any) ?? undefined,
+          sortOrder: r.sortOrder ?? 0,
+          updatedAt: r.updatedAt?.toISOString(),
+        }));
+        return c.json({ success: true, data: localStore.timeline });
+      }
     } catch (err) {
-      console.warn('[API/timeline] Database error, using local timeline:', (err as Error).message);
+      console.warn('[API/timeline] DB query failed, serving local store:', (err as Error).message);
     }
   }
-
   return c.json({ success: true, data: localStore.timeline });
 });
 
@@ -42,8 +56,10 @@ timelineRouter.post('/admin', async (c) => {
     try {
       const [created] = await db.insert(timeline).values(body as any).returning();
       await recordOperation(opId, '/api/timeline/admin', 'POST');
-      console.log(`[Admin/Timeline] Created timeline "${body.title}" (opId: ${opId})`);
-      if (created) return c.json({ success: true, data: created }, 201);
+      if (created) {
+        localStore.timeline.push(created as any);
+        return c.json({ success: true, data: created }, 201);
+      }
     } catch (err) {
       console.warn('[API/timeline] Database insert failed, using local store:', (err as Error).message);
     }
@@ -61,7 +77,6 @@ timelineRouter.post('/admin', async (c) => {
 
   localStore.timeline.push(newEntry);
   await recordOperation(opId, '/api/timeline/admin', 'POST');
-  console.log(`[Admin/Timeline] Created local timeline "${body.title}" (opId: ${opId})`);
   return c.json({ success: true, data: newEntry }, 201);
 });
 
@@ -87,8 +102,12 @@ timelineRouter.put('/admin/:id', async (c) => {
         .where(eq(timeline.id, id))
         .returning();
       await recordOperation(opId, `/api/timeline/admin/${id}`, 'PUT');
-      console.log(`[Admin/Timeline] Updated timeline id=${id} (opId: ${opId})`);
-      if (updated) return c.json({ success: true, data: updated });
+      if (updated) {
+        const idx = localStore.timeline.findIndex(t => t.id === id);
+        if (idx !== -1) localStore.timeline[idx] = updated as any;
+        else localStore.timeline.push(updated as any);
+        return c.json({ success: true, data: updated });
+      }
     } catch (err) {
       console.warn('[API/timeline] Database update failed, using local store:', (err as Error).message);
     }
@@ -104,7 +123,6 @@ timelineRouter.put('/admin/:id', async (c) => {
   } as LocalTimeline;
 
   await recordOperation(opId, `/api/timeline/admin/${id}`, 'PUT');
-  console.log(`[Admin/Timeline] Updated local timeline id=${id} (opId: ${opId})`);
   return c.json({ success: true, data: localStore.timeline[index] });
 });
 
@@ -119,7 +137,6 @@ timelineRouter.delete('/admin/:id', async (c) => {
   if (isDbConfigured) {
     try {
       await db.delete(timeline).where(eq(timeline.id, id));
-      console.log(`[Admin/Timeline] Deleted timeline id=${id} from Supabase`);
     } catch (err) {
       console.warn('[API/timeline] Database delete failed, using local store:', (err as Error).message);
     }
@@ -127,7 +144,6 @@ timelineRouter.delete('/admin/:id', async (c) => {
 
   localStore.timeline = localStore.timeline.filter(t => t.id !== id);
   await recordOperation(opId, `/api/timeline/admin/${id}`, 'DELETE');
-  console.log(`[Admin/Timeline] Recorded DELETE /api/timeline/admin/${id} to syncLog (opId: ${opId})`);
 
   return c.json({ success: true, message: `Timeline entry ${id} deleted` });
 });

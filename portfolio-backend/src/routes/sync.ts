@@ -1,11 +1,12 @@
-﻿import { Hono } from 'hono';
+import { Hono } from 'hono';
 import { syncBatchSchema } from '../shared/schemas.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { checkIdempotency, recordOperation } from '../lib/idempotency.js';
 import { db } from '../db/client.js';
-import { projects, skills, timeline, bio, syncLog } from '../db/schema.js';
+import { projects, skills, timeline, bio, syncLog, services, testimonials, faqs, blog, siteConfig } from '../db/schema.js';
 import { eq, desc } from 'drizzle-orm';
 import { isDbConfigured, localStore } from '../db/localStore.js';
+import { syncFromDatabase, pushToDatabase, writeBackToLocalStoreFile } from '../db/dbSync.js';
 
 const sync = new Hono();
 
@@ -34,6 +35,134 @@ sync.get('/logs', authMiddleware, async (c) => {
     method: 'SYNC',
   }));
   return c.json({ success: true, data: inMem });
+});
+
+import { exec } from 'node:child_process';
+import path from 'node:path';
+import fs from 'node:fs';
+
+/**
+ * Executes the Python GitHub telemetry synchronization automation script.
+ */
+export function runPythonGithubSync(): Promise<{ success: boolean; output?: string; error?: string }> {
+  return new Promise((resolve) => {
+    const candidates = [
+      path.resolve(process.cwd(), 'scripts/sync_github.py'),
+      path.resolve(process.cwd(), '../scripts/sync_github.py'),
+    ];
+    const scriptPath = candidates.find((p) => fs.existsSync(p));
+    if (!scriptPath) {
+      console.warn('[Sync] Python sync script not found in search paths.');
+      return resolve({ success: false, error: 'scripts/sync_github.py not found' });
+    }
+
+    console.log('[Sync] Launching Python GitHub sync automation:', scriptPath);
+    exec(`python "${scriptPath}" --fetch`, { timeout: 30000 }, (error, stdout, stderr) => {
+      if (error) {
+        console.warn('[Sync] Python GitHub sync error:', error.message);
+        resolve({ success: false, error: error.message });
+      } else {
+        console.log('[Sync] Python GitHub telemetry automation completed successfully.');
+        resolve({ success: true, output: stdout.trim() });
+      }
+    });
+  });
+}
+
+/**
+ * POST /api/sync/db
+ * Trigger an immediate manual re-sync from Supabase into server memory AND execute Python GitHub telemetry sync.
+ */
+sync.post('/db', authMiddleware, async (c) => {
+  try {
+    const [result, githubResult] = await Promise.all([
+      syncFromDatabase(),
+      runPythonGithubSync().catch((err) => ({ success: false, error: err.message })),
+    ]);
+
+    return c.json({
+      success: result.success || result.tables.length > 0,
+      syncedTables: result.tables,
+      fileUpdated: result.fileUpdated,
+      githubSync: githubResult,
+      errors: result.errors,
+      counts: {
+        projects: localStore.projects.length,
+        skills: localStore.skills.length,
+        timeline: localStore.timeline.length,
+        services: localStore.services.length,
+        testimonials: localStore.testimonials.length,
+        faqs: localStore.faqs.length,
+        blog: localStore.blog.length,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    return c.json({ success: false, error: (err as Error).message }, 500);
+  }
+});
+
+/**
+ * POST /api/sync/push
+ * Push in-memory store records (projects, skills, timeline, bio) to Supabase database.
+ */
+sync.post('/push', authMiddleware, async (c) => {
+  try {
+    const result = await pushToDatabase();
+    return c.json({
+      success: result.success,
+      pushedTables: result.tables,
+      errors: result.errors,
+      counts: {
+        projects: localStore.projects.length,
+        skills: localStore.skills.length,
+        timeline: localStore.timeline.length,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    return c.json({ success: false, error: (err as Error).message }, 500);
+  }
+});
+
+/**
+ * POST /api/sync/github
+ * Explicitly trigger the Python GitHub automation script.
+ */
+sync.post('/github', authMiddleware, async (c) => {
+  try {
+    const result = await runPythonGithubSync();
+    return c.json(result);
+  } catch (err) {
+    return c.json({ success: false, error: (err as Error).message }, 500);
+  }
+});
+
+/**
+ * GET /api/sync/db
+ * Check database sync status and run fresh pull.
+ */
+sync.get('/db', authMiddleware, async (c) => {
+  try {
+    const result = await syncFromDatabase();
+    return c.json({
+      success: result.success || result.tables.length > 0,
+      syncedTables: result.tables,
+      errors: result.errors,
+      counts: {
+        projects: localStore.projects.length,
+        skills: localStore.skills.length,
+        timeline: localStore.timeline.length,
+        services: localStore.services.length,
+        testimonials: localStore.testimonials.length,
+        faqs: localStore.faqs.length,
+        blog: localStore.blog.length,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    return c.json({ success: false, error: (err as Error).message }, 500);
+  }
 });
 
 /**
@@ -75,6 +204,10 @@ sync.post('/', authMiddleware, async (c) => {
   const applied = results.filter(r => r.status === 'applied').length;
   const skipped = results.filter(r => r.status === 'skipped').length;
   const errors = results.filter(r => r.status === 'error').length;
+
+  if (applied > 0) {
+    writeBackToLocalStoreFile();
+  }
 
   return c.json({
     success: true,
@@ -202,6 +335,116 @@ async function applyOperation(method: string, url: string, body: unknown) {
       }
     }
     localStore.bio = { ...localStore.bio, ...(body as any) };
+    return;
+  }
+
+  // /api/testimonials/admin[/:id] or /testimonials/admin[/:id] or /api/admin/testimonials[/:id] or /admin/testimonials[/:id]
+  const testimonialMatch = pathname.match(/^\/?(?:api\/)?(?:admin\/testimonials|testimonials\/admin)(?:\/([^/?#]+))?$/);
+  if (testimonialMatch) {
+    const id = testimonialMatch[1] ? parseInt(testimonialMatch[1], 10) : null;
+    const b = body as any;
+    const nameVal = b?.name || b?.author || 'Anonymous';
+    const titleVal = b?.title || b?.role || '';
+    const avatarInitialsVal = b?.avatarInitials || (nameVal ? nameVal.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() : 'AN');
+    const avatarVal = b?.avatar || '';
+
+    const payload = {
+      quote: b?.quote,
+      name: nameVal,
+      title: titleVal,
+      company: b?.company || '',
+      avatarInitials: avatarInitialsVal,
+      avatar: avatarVal,
+      accent: b?.accent || 'violet',
+      rating: b?.rating ?? 5,
+      sortOrder: b?.sortOrder ?? 0,
+    };
+
+    if (isDbConfigured) {
+      try {
+        if (method === 'POST') { await db.insert(testimonials).values(payload as any); }
+        if (method === 'PUT' && id) { await db.update(testimonials).set(payload as any).where(eq(testimonials.id, id)); }
+        if (method === 'DELETE' && id) { await db.delete(testimonials).where(eq(testimonials.id, id)); }
+      } catch (err) {
+        console.warn('[Sync] Database testimonials write failed:', (err as Error).message);
+      }
+    }
+
+    if (method === 'POST') {
+      localStore.testimonials.push({ ...payload, id: ++localStore.nextTestimonialId } as any);
+      return;
+    }
+    if (method === 'PUT' && id) {
+      const idx = localStore.testimonials.findIndex(t => t.id === id);
+      if (idx !== -1) localStore.testimonials[idx] = { ...localStore.testimonials[idx], ...payload } as any;
+      return;
+    }
+    if (method === 'DELETE' && id) {
+      localStore.testimonials = localStore.testimonials.filter(t => t.id !== id);
+      return;
+    }
+  }
+
+  // /api/services/admin[/:id] or /services/admin[/:id] or /api/admin/services[/:id] or /admin/services[/:id]
+  const serviceMatch = pathname.match(/^\/?(?:api\/)?(?:admin\/services|services\/admin)(?:\/([^/?#]+))?$/);
+  if (serviceMatch) {
+    const id = serviceMatch[1] ? parseInt(serviceMatch[1], 10) : null;
+    if (isDbConfigured) {
+      try {
+        if (method === 'POST') { await db.insert(services).values(body as any); }
+        if (method === 'PUT' && id) { await db.update(services).set(body as any).where(eq(services.id, id)); }
+        if (method === 'DELETE' && id) { await db.delete(services).where(eq(services.id, id)); }
+      } catch (err) {
+        console.warn('[Sync] Database services write failed:', (err as Error).message);
+      }
+    }
+    if (method === 'POST') {
+      localStore.services.push({ ...(body as any), id: ++localStore.nextServiceId });
+      return;
+    }
+    if (method === 'PUT' && id) {
+      const idx = localStore.services.findIndex(s => s.id === id);
+      if (idx !== -1) localStore.services[idx] = { ...localStore.services[idx], ...(body as any) };
+      return;
+    }
+    if (method === 'DELETE' && id) {
+      localStore.services = localStore.services.filter(s => s.id !== id);
+      return;
+    }
+  }
+
+  // /api/config/admin or /config/admin or /api/admin/config or /admin/config or /api/config
+  const configMatch = pathname.match(/^\/?(?:api\/)?(?:admin\/config|config\/admin|config)\/?$/);
+  if (configMatch && (method === 'PUT' || method === 'POST')) {
+    const cData = body as any;
+    localStore.siteConfig = {
+      components: { ...localStore.siteConfig.components, ...(cData.components || {}), ...(cData.subcomponents || {}) },
+      subcomponents: { ...localStore.siteConfig.subcomponents, ...(cData.subcomponents || {}) },
+      effects: { ...localStore.siteConfig.effects, ...(cData.effects || {}) },
+      theme: { ...localStore.siteConfig.theme, ...(cData.theme || {}) },
+      updatedAt: new Date().toISOString(),
+    };
+    if (isDbConfigured) {
+      try {
+        const [existing] = await db.select().from(siteConfig).limit(1);
+        if (existing) {
+          await db.update(siteConfig).set({
+            components: localStore.siteConfig.components,
+            effects: localStore.siteConfig.effects,
+            theme: localStore.siteConfig.theme,
+            updatedAt: new Date(),
+          });
+        } else {
+          await db.insert(siteConfig).values({
+            components: localStore.siteConfig.components,
+            effects: localStore.siteConfig.effects,
+            theme: localStore.siteConfig.theme,
+          });
+        }
+      } catch (err) {
+        console.warn('[Sync] Database config write failed:', (err as Error).message);
+      }
+    }
     return;
   }
 

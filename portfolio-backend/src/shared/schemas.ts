@@ -8,6 +8,7 @@ export const contactSchema = z.object({
   name:    z.string().min(2, 'Name must be at least 2 characters'),
   email:   z.string().email('Please enter a valid email address'),
   message: z.string().min(10, 'Message must be at least 10 characters').max(2000),
+  role:    z.string().optional(),
 });
 
 export const projectSchema = z.object({
@@ -21,16 +22,28 @@ export const projectSchema = z.object({
   features:     z.array(z.string()).min(1),
   architecture: z.string().min(1),
   stack:        z.array(z.string()).min(1),
-  github:       z.string().url('Must be a valid URL'),
-  live:         z.string().url('Must be a valid URL'),
+  github:       z.string().min(1),
+  live:         z.string().min(1),
   stars:        z.number().int().min(0).default(0),
   status:       z.string().min(1),
   sortOrder:    z.number().int().default(0),
+  tagline:      z.string().optional(),
+  problem:      z.string().optional(),
+  solution:     z.string().optional(),
+  metrics:      z.array(z.object({ label: z.string(), value: z.string() })).optional(),
+  mockup:       z.enum(['dashboard', 'chat', 'editor', 'ledger']).optional(),
+  role:         z.string().optional(),
+  period:       z.string().optional(),
+  highlights:   z.array(z.string()).optional(),
+  challenges:   z.string().optional(),
+  accent:       z.enum(['violet', 'emerald', 'amber']).optional(),
+  emoji:        z.string().optional(),
 });
 
 export const skillItemSchema = z.object({
-  name: z.string().min(1),
-  val:  z.string().regex(/^\d+%$/, 'Must be a percentage like "95%"'),
+  name:  z.string().min(1),
+  val:   z.string(),
+  level: z.number().optional(),
 });
 
 export const skillSchema = z.object({
@@ -41,10 +54,49 @@ export const skillSchema = z.object({
 });
 
 export const timelineSchema = z.object({
-  time:      z.string().min(1),
+  time:         z.string().min(1),
+  title:        z.string().min(1),
+  inst:         z.string().min(1),
+  desc:         z.string().min(10),
+  type:         z.enum(['work', 'education']).optional(),
+  location:     z.string().optional(),
+  achievements: z.array(z.string()).optional(),
+  stack:        z.array(z.string()).optional(),
+  sortOrder:    z.number().int().default(0),
+});
+
+export const serviceSchema = z.object({
+  title:       z.string().min(1),
+  description: z.string().min(1),
+  bullets:     z.array(z.string()).min(1),
+  accent:      z.enum(['violet', 'emerald', 'amber']).default('violet'),
+  icon:        z.string().default('Code2'),
+  sortOrder:   z.number().int().default(0),
+});
+
+export const testimonialSchema = z.object({
+  quote:          z.string().min(1),
+  name:           z.string().optional(),
+  author:         z.string().optional(),
+  title:          z.string().optional(),
+  role:           z.string().optional(),
+  company:        z.string().default(''),
+  avatarInitials: z.string().optional(),
+  avatar:         z.string().optional(),
+  accent:         z.enum(['violet', 'emerald', 'amber']).default('violet'),
+  rating:         z.number().int().min(1).max(5).default(5),
+  sortOrder:      z.number().int().default(0),
+});
+
+export const blogSchema = z.object({
+  slug:      z.string().min(1),
   title:     z.string().min(1),
-  inst:      z.string().min(1),
-  desc:      z.string().min(10),
+  excerpt:   z.string().min(1),
+  category:  z.string().min(1),
+  readTime:  z.string().min(1),
+  date:      z.string().min(1),
+  accent:    z.enum(['violet', 'emerald', 'amber']).default('violet'),
+  body:      z.array(z.any()).min(1),
   sortOrder: z.number().int().default(0),
 });
 
@@ -54,13 +106,22 @@ export const bioSchema = z.object({
   education:    z.string().min(1),
   location:     z.string().min(1),
   email:        z.string().email(),
-  github:       z.string().url(),
-  linkedin:     z.string().url(),
-  resumeUrl:    z.string().url(),
-  avatarUrl:    z.string().url(),
+  github:       z.string().min(1),
+  linkedin:     z.string().min(1),
+  twitter:      z.string().optional(),
+  website:      z.string().optional(),
+  resumeUrl:    z.string().min(1),
+  avatarUrl:    z.string().min(1),
   bio:          z.string().min(20),
   interests:    z.array(z.string()).min(1),
   currentFocus: z.string().min(10),
+  stats:        z.array(z.object({ label: z.string(), value: z.string() })).optional(),
+  // Hero customization fields
+  headlinePrefix:    z.string().optional(),
+  heroDescription:   z.string().optional(),
+  typewriterPhrases: z.array(z.string()).optional(),
+  // Footer description override
+  footerTagline:     z.string().optional(),
 });
 
 export const loginSchema = z.object({
@@ -80,11 +141,31 @@ export const syncBatchSchema = z.object({
   operations: z.array(syncOperationSchema).min(1).max(50),
 });
 
+export const siteConfigSchema = z.object({
+  components:    z.record(z.string(), z.boolean()).default({}),
+  subcomponents: z.record(z.string(), z.boolean()).optional().default({}),
+  effects:       z.record(z.string(), z.boolean()).default({}),
+  theme:         z.record(z.string(), z.any()).default({}),
+});
+
+export const faqSchema = z.object({
+  question:  z.string().min(1, 'Question is required'),
+  answer:    z.string().min(1, 'Answer is required'),
+  sortOrder: z.number().int().default(0),
+});
+
 // Inferred TypeScript types from schemas
-export type ContactInput    = z.infer<typeof contactSchema>;
-export type ProjectInput    = z.infer<typeof projectSchema>;
-export type SkillInput      = z.infer<typeof skillSchema>;
-export type TimelineInput   = z.infer<typeof timelineSchema>;
-export type BioInput        = z.infer<typeof bioSchema>;
-export type LoginInput      = z.infer<typeof loginSchema>;
-export type SyncBatchInput  = z.infer<typeof syncBatchSchema>;
+export type ContactInput     = z.infer<typeof contactSchema>;
+export type ProjectInput     = z.infer<typeof projectSchema>;
+export type SkillInput       = z.infer<typeof skillSchema>;
+export type TimelineInput    = z.infer<typeof timelineSchema>;
+export type ServiceInput     = z.infer<typeof serviceSchema>;
+export type TestimonialInput = z.infer<typeof testimonialSchema>;
+export type BlogInput        = z.infer<typeof blogSchema>;
+export type BioInput         = z.infer<typeof bioSchema>;
+export type LoginInput       = z.infer<typeof loginSchema>;
+export type SyncBatchInput   = z.infer<typeof syncBatchSchema>;
+export type SiteConfigInput  = z.infer<typeof siteConfigSchema>;
+export type FaqInput         = z.infer<typeof faqSchema>;
+
+

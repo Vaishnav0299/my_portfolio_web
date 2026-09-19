@@ -20,11 +20,11 @@ try {
 const connectionString = process.env.DATABASE_URL || 'postgres://placeholder:placeholder@localhost:5432/placeholder';
 
 const client = postgres(connectionString, {
-  max: 1,                  // Vercel serverless: single connection per invocation
-  idle_timeout: 20,
-  connect_timeout: 10,
-  prepare: false,          // Required for Supabase PgBouncer in transaction mode
-  ssl: 'require',          // Explicit SSL mode for Supabase pooled cloud connection
+  max: process.env.VERCEL ? 1 : 10,  // 10 concurrent connections for Node server, 1 for serverless
+  idle_timeout: 30,
+  connect_timeout: 5,               // Fast 5s timeout instead of hanging
+  prepare: false,                   // Required for Supabase PgBouncer in transaction mode
+  ssl: 'require',                   // Explicit SSL mode for Supabase pooled cloud connection
 });
 
 export const db = drizzle(client, { schema });

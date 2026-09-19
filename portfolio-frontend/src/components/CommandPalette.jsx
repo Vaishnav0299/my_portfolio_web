@@ -1,17 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Home, FolderGit2, Cpu, Briefcase, Terminal as TermIcon, Github, Linkedin, Mail } from 'lucide-react';
+import {
+  Search,
+  Home,
+  FolderGit2,
+  Cpu,
+  Briefcase,
+  Github,
+  Linkedin,
+  Twitter,
+  Mail,
+  FileText,
+  BookOpen,
+  MessageSquare,
+  HelpCircle,
+  Clock,
+  Laptop,
+  CheckCircle2,
+} from 'lucide-react';
 
 const cmdItems = [
-  { id: 1, label: 'Go to Home', target: '/', key: '/', icon: Home, action: 'nav' },
-  { id: 2, label: 'Go to About Me', target: '/about', key: '/about', icon: Briefcase, action: 'nav' },
-
-  { id: 4, label: 'View Projects', target: '/projects', key: '/projects', icon: FolderGit2, action: 'nav' },
-  { id: 5, label: 'View Skills & Tech Stack', target: '/skills', key: '/skills', icon: Cpu, action: 'nav' },
-  { id: 6, label: 'Get in Touch (Contact)', target: '/contact', key: '/contact', icon: Mail, action: 'nav' },
-  { id: 7, label: 'Open Developer Terminal', target: '/terminal', key: '/terminal', icon: TermIcon, action: 'nav' },
-  { id: 8, label: 'Open GitHub Profile', target: 'https://github.com/Vaishnav0299', key: '↗', icon: Github, action: 'ext' },
-  { id: 9, label: 'Open LinkedIn Profile', target: 'https://www.linkedin.com/in/vaishnav-gaware-107799315/', key: '↗', icon: Linkedin, action: 'ext' }
+  { id: 1, label: 'Home / Hero', target: '/', key: 'H', icon: Home, action: 'nav' },
+  { id: 2, label: 'About Me & Philosophy', target: '/#about', key: 'A', icon: Briefcase, action: 'hash' },
+  { id: 3, label: 'Career & Experience', target: '/#experience', key: 'E', icon: Briefcase, action: 'hash' },
+  { id: 4, label: 'Featured Projects & Mockups', target: '/#projects', key: 'P', icon: FolderGit2, action: 'hash' },
+  { id: 5, label: 'Engineering Services', target: '/#services', key: 'S', icon: CheckCircle2, action: 'hash' },
+  { id: 6, label: 'Skills & Proficiency Matrix', target: '/#skills', key: 'K', icon: Cpu, action: 'hash' },
+  { id: 7, label: 'Technical Writing & Blog', target: '/#writing', key: 'W', icon: BookOpen, action: 'hash' },
+  { id: 8, label: 'Client & Team Reviews', target: '/#testimonials', key: 'R', icon: MessageSquare, action: 'hash' },
+  { id: 9, label: 'What I Am Doing Now', target: '/#now', key: 'N', icon: Clock, action: 'hash' },
+  { id: 10, label: 'Uses, Gear & Software Setup', target: '/#uses', key: 'U', icon: Laptop, action: 'hash' },
+  { id: 11, label: 'Frequently Asked Questions', target: '/#faq', key: 'F', icon: HelpCircle, action: 'hash' },
+  { id: 12, label: 'Contact & Hire Form', target: '/#contact', key: 'C', icon: Mail, action: 'hash' },
+  { id: 14, label: 'Download Resume (PDF)', target: '/resume.pdf', key: 'PDF', icon: FileText, action: 'download' },
+  { id: 15, label: 'Open GitHub Profile', target: 'https://github.com/Vaishnav0299', key: 'GH', icon: Github, action: 'ext' },
+  { id: 16, label: 'Open LinkedIn Profile', target: 'https://www.linkedin.com/in/vaishnav-gaware', key: 'IN', icon: Linkedin, action: 'ext' },
+  { id: 17, label: 'Open Twitter Profile', target: 'https://twitter.com/vaishnav0299', key: 'TW', icon: Twitter, action: 'ext' },
 ];
 
 export function CommandPalette({ isOpen, onClose }) {
@@ -34,7 +58,7 @@ export function CommandPalette({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const filtered = cmdItems.filter(item =>
+  const filtered = cmdItems.filter((item) =>
     item.label.toLowerCase().includes(query.toLowerCase())
   );
 
@@ -42,13 +66,26 @@ export function CommandPalette({ isOpen, onClose }) {
     onClose();
     if (item.action === 'nav') {
       navigate(item.target);
+    } else if (item.action === 'hash') {
+      if (window.location.pathname !== '/') {
+        navigate(item.target);
+      } else {
+        const id = item.target.replace('/#', '');
+        const elem = document.getElementById(id);
+        if (elem) elem.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else if (item.action === 'download') {
+      window.open(item.target, '_blank');
     } else if (item.action === 'ext') {
       window.open(item.target, '_blank');
     }
   };
 
   return (
-    <div className="cmd-modal-backdrop active" onClick={(e) => e.target.classList.contains('cmd-modal-backdrop') && onClose()}>
+    <div
+      className="cmd-modal-backdrop active"
+      onClick={(e) => e.target.classList.contains('cmd-modal-backdrop') && onClose()}
+    >
       <div className="cmd-modal">
         <div className="cmd-header">
           <Search className="cmd-search-icon" />
@@ -57,21 +94,25 @@ export function CommandPalette({ isOpen, onClose }) {
             id="cmd-search-input"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Type a command or section..."
+            placeholder="Type a command or jump to section..."
             autoFocus
             autoComplete="off"
           />
-          <span className="cmd-esc-badge" onClick={onClose} style={{ cursor: 'pointer' }}>ESC</span>
+          <span className="cmd-esc-badge" onClick={onClose} style={{ cursor: 'pointer' }}>
+            ESC
+          </span>
         </div>
         <div className="cmd-list" id="cmd-options-list">
           {filtered.length === 0 ? (
-            <p style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-muted)' }}>No commands found.</p>
+            <p style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+              No commands found.
+            </p>
           ) : (
-            filtered.map(item => {
+            filtered.map((item) => {
               const IconComponent = item.icon;
               return (
                 <div key={item.id} className="cmd-item" onClick={() => handleSelect(item)}>
-                  <IconComponent style={{ width: 18, height: 18 }} />
+                  <IconComponent style={{ width: 17, height: 17 }} />
                   <span>{item.label}</span>
                   <span className="cmd-key">{item.key}</span>
                 </div>
@@ -83,3 +124,5 @@ export function CommandPalette({ isOpen, onClose }) {
     </div>
   );
 }
+
+export default CommandPalette;

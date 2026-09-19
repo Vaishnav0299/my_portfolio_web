@@ -1,18 +1,39 @@
 # Dependencies & Store
 node_modules/
+**/node_modules/
 .pnpm-store/
+.npm/
 
-# Build Outputs
+# Build & Output Artifacts
 dist/
+**/dist/
 dist-*/
 build/
+**/build/
 .output/
+.vercel/
+**/.vercel/
+.turbo/
 
 # Environment Variables & Secrets (CRITICAL: PREVENTS EXPOSING DB PASSWORDS & JWT SECRETS)
 .env
 .env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+**/.env
+**/.env.*
+**/.env.local
 !.env.example
 !.env.*.example
+!**/.env.example
+
+# Credentials & Key Files
+*.pem
+*.key
+*.cert
+*.crt
 
 # Logs & Debugging
 *.log
@@ -23,14 +44,22 @@ pnpm-debug.log*
 # OS & Editor files
 .DS_Store
 Thumbs.db
+desktop.ini
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Lockfiles (Monorepo uses pnpm-lock.yaml)
+# Lockfiles (Monorepo uses root pnpm-lock.yaml)
 package-lock.json
+**/package-lock.json
 yarn.lock
+**/yarn.lock
+
+# TypeScript build info & Caches
+*.tsbuildinfo
+.eslintcache
+.cache/
 
 # AI Agent Context & Rules
 AGENTS.md

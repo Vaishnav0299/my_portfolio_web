@@ -1,55 +1,177 @@
-import React from 'react';
-import { GraduationCap, MapPin, Mail } from 'lucide-react';
-import { aboutData } from '../data/portfolioData';
+import React, { useState, useEffect } from 'react';
+import { GraduationCap, MapPin, Mail, Github, Linkedin, Twitter, ArrowUpRight } from 'lucide-react';
+import { api } from '../lib/api';
+import { useConfig, isEnabled } from '../context/ConfigContext.jsx';
 
 export function About() {
-  return (
-    <section id="about" className="about-section">
-      <div className="section-header">
-        <h2 className="section-title">About Me</h2>
-        <p className="section-subtitle">Background, education, core technical interests, and career objectives.</p>
-      </div>
+  const { config } = useConfig();
+  const [bioData, setBioData] = useState(null);
 
-      <div className="about-cards-column">
-        {/* Meta Info Row */}
-        <div className="about-card bio-card">
-          <div className="about-meta-list" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: '1.25rem' }}>
-            <div className="about-meta-item">
-              <GraduationCap style={{ width: 18, height: 18, color: 'var(--accent-primary)' }} />
-              <span>{aboutData.education}</span>
-            </div>
-            <div className="about-meta-item">
-              <MapPin style={{ width: 18, height: 18, color: 'var(--accent-secondary)' }} />
-              <span>{aboutData.location}</span>
-            </div>
-            <div className="about-meta-item">
-              <Mail style={{ width: 18, height: 18, color: 'var(--accent-emerald)' }} />
-              <a href={`mailto:${aboutData.email}`} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>{aboutData.email}</a>
-            </div>
-          </div>
-          <h3 style={{ marginTop: '1.25rem' }}>Short Bio</h3>
-          <p>{aboutData.bio}</p>
+  useEffect(() => {
+    let isMounted = true;
+    api.getBio()
+      .then((res) => {
+        if (isMounted && res?.data) {
+          setBioData(res.data);
+        }
+      })
+      .catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
+  const name = bioData?.name || 'Vaishnav Gaware';
+  const title = bioData?.title || 'Full-Stack Developer & AI Systems Engineer';
+  const education = bioData?.education || 'B.E. in Computer Engineering — Savitribai Phule Pune University';
+  const location = bioData?.location || 'Pune, India (Open to Remote Worldwide)';
+  const bio = bioData?.bio || 'Senior Full-Stack Developer specializing in high-performance web applications, distributed real-time systems, and pragmatic AI workflows.';
+  const currentFocus = bioData?.currentFocus || 'Architecting ultra-resilient multi-tenant platforms, optimizing P95 query performance, and building delightful developer experiences.';
+  const interests = bioData?.interests || [
+    'Full-Stack Web Architecture — Next.js, React, Node.js, TypeScript',
+    'Real-Time Systems, WebSockets & CRDT Collaboration (Yjs)',
+    'PostgreSQL, Prisma, Drizzle ORM & Database Performance Tuning',
+    'Pragmatic AI & RAG Pipelines (pgvector, Embeddings, Grounded Citations)',
+  ];
+
+  return (
+    <section id="about" className="section" style={{ padding: '5rem 0' }}>
+      <div className="section-container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1.5rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <span className="pulse-pill" style={{ marginBottom: '0.75rem' }}>
+            IDENTITY &amp; PHILOSOPHY
+          </span>
+          <h2 style={{ fontSize: '2.25rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '0.5rem' }}>
+            About {name}
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', maxWidth: '540px', margin: '0.75rem auto 0', fontSize: '1.05rem' }}>
+            A software engineer who cares deeply about architecture, velocity, and business outcomes.
+          </p>
         </div>
 
-        <div className="about-two-col">
-          <div className="about-card interests-card">
-            <h3>Core Technical Interests</h3>
-            <ul className="interests-list">
-              {aboutData.interests.map((item, idx) => (
-                <li key={idx}>
-                  <span className="interest-bullet"></span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+          {/* Identity Card */}
+          {isEnabled(config, 'about', 'aboutBioCard') && (
+          <div className="glass-card" style={{ padding: '2rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginBottom: '1.5rem' }}>
+                <div
+                  style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '16px',
+                    background: 'linear-gradient(135deg, #8b5cf6 0%, #10b981 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontWeight: 800,
+                    fontSize: '1.5rem',
+                    fontFamily: 'var(--font-mono)',
+                    boxShadow: '0 8px 24px -4px rgba(139, 92, 246, 0.4)',
+                  }}
+                >
+                  VG
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                    {name}
+                  </h3>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--accent-primary)', fontWeight: 600 }}>
+                    {title}
+                  </p>
+                </div>
+              </div>
 
-          <div className="about-card seeking-card">
-            <h3>Current Focus</h3>
-            <p>{aboutData.currentFocus}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <MapPin size={16} style={{ color: 'var(--accent-primary)' }} />
+                  <span>{location}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <GraduationCap size={16} style={{ color: 'var(--accent-emerald)' }} />
+                  <span>{education}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <Mail size={16} style={{ color: '#f59e0b' }} />
+                  <a href={`mailto:${bioData?.email || 'vaishnavgaware1@gmail.com'}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                    {bioData?.email || 'vaishnavgaware1@gmail.com'}
+                  </a>
+                </div>
+              </div>
+
+              <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                {bio}
+              </p>
+            </div>
+
+            {/* Social links bar */}
+            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
+              <a
+                href={bioData?.github || 'https://github.com/Vaishnav0299'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-secondary"
+                style={{ padding: '0.4rem 0.85rem', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+              >
+                <Github size={15} />
+                <span>GitHub</span>
+              </a>
+              <a
+                href={bioData?.linkedin || 'https://www.linkedin.com/in/vaishnav-gaware'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-secondary"
+                style={{ padding: '0.4rem 0.85rem', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+              >
+                <Linkedin size={15} />
+                <span>LinkedIn</span>
+              </a>
+              {(bioData?.twitter) && (
+              <a
+                href={bioData.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-secondary"
+                style={{ padding: '0.4rem 0.85rem', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+              >
+                <Twitter size={15} />
+                <span>Twitter</span>
+              </a>
+              )}
+            </div>
           </div>
+          )}
+
+          {/* Focus & Interests Column */}
+          {isEnabled(config, 'about', 'aboutPhilosophyCard') && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div className="glass-card" style={{ padding: '1.75rem', borderRadius: '16px' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1rem' }}>
+                Core Technical Focus
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                {interests.map((item, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <span style={{ color: 'var(--accent-primary)', fontWeight: 700 }}>&bull;</span>
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="glass-card" style={{ padding: '1.75rem', borderRadius: '16px' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.75rem' }}>
+                Current Engineering Objective
+              </h3>
+              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.65 }}>
+                {currentFocus}
+              </p>
+            </div>
+          </div>
+          )}
         </div>
       </div>
     </section>
   );
 }
+
+export default About;

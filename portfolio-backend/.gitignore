@@ -1,0 +1,20 @@
+# Backend dependencies & build
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Environment & Secrets
+.env
+.env.*
+.env.local
+!.env.example
+
+# Lockfiles
+package-lock.json
+
+# Logs
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db

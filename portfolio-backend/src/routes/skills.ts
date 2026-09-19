@@ -14,10 +14,20 @@ const skillsRouter = new Hono();
 skillsRouter.get('/', async (c) => {
   if (isDbConfigured) {
     try {
-      const allSkills = await db.select().from(skills).orderBy(skills.sortOrder);
-      if (allSkills.length > 0) return c.json({ success: true, data: allSkills });
+      const rows = await db.select().from(skills).orderBy(skills.sortOrder);
+      if (rows && rows.length > 0) {
+        localStore.skills = rows.map(r => ({
+          id: r.id,
+          category: r.category,
+          icon: r.icon,
+          items: (r.items as any) || [],
+          sortOrder: r.sortOrder ?? 0,
+          updatedAt: r.updatedAt?.toISOString(),
+        }));
+        return c.json({ success: true, data: localStore.skills });
+      }
     } catch (err) {
-      console.warn('[API/skills] Database query failed, using local store:', (err as Error).message);
+      console.warn('[API/skills] DB query failed, serving local store:', (err as Error).message);
     }
   }
   return c.json({ success: true, data: localStore.skills });
@@ -41,8 +51,10 @@ skillsRouter.post('/admin', async (c) => {
     try {
       const [created] = await db.insert(skills).values(body as any).returning();
       await recordOperation(opId, '/api/skills/admin', 'POST');
-      console.log(`[Admin/Skills] ✓ Created skill "${body.category}" (opId: ${opId})`);
-      if (created) return c.json({ success: true, data: created }, 201);
+      if (created) {
+        localStore.skills.push(created as any);
+        return c.json({ success: true, data: created }, 201);
+      }
     } catch (err) {
       console.warn('[API/skills] Database insert failed, using local store:', (err as Error).message);
     }
@@ -59,7 +71,6 @@ skillsRouter.post('/admin', async (c) => {
 
   localStore.skills.push(newSkill);
   await recordOperation(opId, '/api/skills/admin', 'POST');
-  console.log(`[Admin/Skills] ✓ Created local skill "${body.category}" (opId: ${opId})`);
   return c.json({ success: true, data: newSkill }, 201);
 });
 
@@ -85,8 +96,12 @@ skillsRouter.put('/admin/:id', async (c) => {
         .where(eq(skills.id, id))
         .returning();
       await recordOperation(opId, `/api/skills/admin/${id}`, 'PUT');
-      console.log(`[Admin/Skills] ✓ Updated skill id=${id} (opId: ${opId})`);
-      if (updated) return c.json({ success: true, data: updated });
+      if (updated) {
+        const idx = localStore.skills.findIndex(s => s.id === id);
+        if (idx !== -1) localStore.skills[idx] = updated as any;
+        else localStore.skills.push(updated as any);
+        return c.json({ success: true, data: updated });
+      }
     } catch (err) {
       console.warn('[API/skills] Database update failed, using local store:', (err as Error).message);
     }
@@ -102,7 +117,6 @@ skillsRouter.put('/admin/:id', async (c) => {
   } as LocalSkill;
 
   await recordOperation(opId, `/api/skills/admin/${id}`, 'PUT');
-  console.log(`[Admin/Skills] ✓ Updated local skill id=${id} (opId: ${opId})`);
   return c.json({ success: true, data: localStore.skills[index] });
 });
 
@@ -117,7 +131,6 @@ skillsRouter.delete('/admin/:id', authMiddleware, async (c) => {
   if (isDbConfigured) {
     try {
       await db.delete(skills).where(eq(skills.id, id));
-      console.log(`[Admin/Skills] Deleted skill id=${id} from Supabase`);
     } catch (err) {
       console.warn('[API/skills] Database delete failed, using local store:', (err as Error).message);
     }
@@ -125,7 +138,6 @@ skillsRouter.delete('/admin/:id', authMiddleware, async (c) => {
 
   localStore.skills = localStore.skills.filter(s => s.id !== id);
   await recordOperation(opId, `/api/skills/admin/${id}`, 'DELETE');
-  console.log(`[Admin/Skills] ✓ Recorded DELETE /api/skills/admin/${id} to syncLog (opId: ${opId})`);
 
   return c.json({ success: true, message: `Skill ${id} deleted` });
 });

@@ -1,80 +1,69 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Hero } from '../components/Hero';
-import { User, FolderGit2, Cpu, Terminal as TermIcon, Mail, ArrowRight } from 'lucide-react';
+import { GitHubStrip } from '../components/GitHubStrip';
+import { About } from '../components/About';
+import { Timeline } from '../components/Timeline';
+import { Projects } from '../components/Projects';
+import { Services } from '../components/Services';
+import { Skills } from '../components/Skills';
+import { Process } from '../components/Process';
+import { Blog } from '../components/Blog';
+import { Testimonials } from '../components/Testimonials';
+import { Now } from '../components/Now';
+import { Uses } from '../components/Uses';
+import { FAQ } from '../components/FAQ';
+import { Contact } from '../components/Contact';
+import { useConfig } from '../context/ConfigContext.jsx';
 
 export function Home() {
-  const portalCards = [
-    {
-      title: 'About Me',
-      desc: 'Explore my academic timeline, engineering background, and current research focus.',
-      link: '/about',
-      icon: User,
-      colorClass: 'accent-primary',
-    },
-    {
-      title: 'Projects Showcase',
-      desc: 'Explore enterprise full-stack web applications, ML models, and automated data pipelines.',
-      link: '/projects',
-      icon: FolderGit2,
-      colorClass: 'accent-secondary',
-    },
-
-    {
-      title: 'Technical Skills',
-      desc: 'Deep-dive into my frontend, backend, database, and AI technical stacks.',
-      link: '/skills',
-      icon: Cpu,
-      colorClass: 'accent-emerald',
-    },
-    {
-      title: 'Interactive CLI',
-      desc: 'Interact with a developer command-line terminal simulation simulating system states.',
-      link: '/terminal',
-      icon: TermIcon,
-      colorClass: 'accent-amber',
-    }
-  ];
+  const { config } = useConfig();
+  const c = config?.components || {};
 
   return (
     <div className="home-page-container">
-      <Hero />
-      
-      {/* Portal Directory Section */}
-      <section className="portal-section" style={{ padding: '4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
-        <div className="section-header" style={{ marginBottom: '3rem', textAlign: 'center' }}>
-          <h2 className="section-title">Directory Portal</h2>
-          <p className="section-subtitle">Explore different areas of my portfolio through these interactive modules.</p>
-        </div>
+      {/* 1. Hero */}
+      {c.hero !== false && <Hero />}
 
-        <div className="portal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-          {portalCards.map((card, idx) => {
-            const Icon = card.icon;
-            return (
-              <div key={idx} className="portfolio-card portal-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <div className="portal-card-header" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                  <div className={`portal-icon-wrap ${card.colorClass}`} style={{ 
-                    padding: '0.75rem', 
-                    borderRadius: '12px', 
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)'
-                  }}>
-                    <Icon style={{ width: 24, height: 24 }} />
-                  </div>
-                  <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700 }}>{card.title}</h3>
-                </div>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: '1.5', flexGrow: 1, marginBottom: '1.5rem' }}>
-                  {card.desc}
-                </p>
-                <Link to={card.link} className="btn btn-secondary btn-sm" style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: '0.4rem', width: 'auto' }}>
-                  <span>Open Section</span>
-                  <ArrowRight style={{ width: 14, height: 14 }} />
-                </Link>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      {/* 2. GitHub Activity Strip */}
+      {c.githubStrip !== false && <GitHubStrip />}
+
+      {/* 3. About Identity & Philosophy */}
+      {c.about !== false && <About />}
+
+      {/* 4. Experience & Education Timeline */}
+      {c.experience !== false && <Timeline />}
+
+      {/* 5. Projects Showcase with Wireframe Mockups */}
+      {c.projects !== false && <Projects />}
+
+      {/* 6. Engineering Services & Conversion */}
+      {c.services !== false && <Services />}
+
+      {/* 7. Technical Skills Matrix */}
+      {c.skills !== false && <Skills />}
+
+      {/* 8. Development Process (4 Phases) */}
+      {c.process !== false && <Process />}
+
+      {/* 9. Technical Writing & Notes */}
+      {c.blog !== false && <Blog />}
+
+      {/* 10. Client & Team Testimonials Marquee */}
+      {c.testimonials !== false && <Testimonials />}
+
+      {/* 11. What I Am Doing Now */}
+      {c.now !== false && <Now />}
+
+      {/* 12. Tech Stack & Gear Setup */}
+      {c.uses !== false && <Uses />}
+
+      {/* 13. FAQ */}
+      {c.faq !== false && <FAQ />}
+
+      {/* 14. Contact Form */}
+      {c.contact !== false && <Contact />}
     </div>
   );
 }
+
+export default Home;
