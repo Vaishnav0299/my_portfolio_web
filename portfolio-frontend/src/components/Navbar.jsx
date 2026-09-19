@@ -45,7 +45,7 @@ export function Navbar({ onOpenCmd, theme, onToggleTheme }) {
           <a
             href="/resume.pdf"
             download="Vaishnav_Gaware_Resume.pdf"
-            className="btn btn-secondary"
+            className="btn btn-secondary nav-resume-btn"
             style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.4rem 0.75rem', fontSize: '0.8rem' }}
           >
             <FileText size={14} />
@@ -66,26 +66,74 @@ export function Navbar({ onOpenCmd, theme, onToggleTheme }) {
           <button
             type="button"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            style={{ display: 'none', background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}
             className="mobile-menu-btn"
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div style={{ padding: '1rem 1.5rem 1.5rem', background: 'var(--bg-surface)', borderBottom: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-          <a href="/#about" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>About</a>
-          <a href="/#experience" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Experience</a>
-          <a href="/#projects" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Projects</a>
-          <a href="/#services" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Services</a>
-          <a href="/#skills" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Skills</a>
-          <a href="/#writing" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Writing</a>
-          <a href="/#testimonials" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Reviews</a>
-          <a href="/#contact" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Contact</a>
+        <div
+          className="mobile-drawer glass"
+          style={{
+            padding: '1.25rem 1.5rem 1.75rem',
+            borderBottom: '1px solid var(--border-color)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.9rem',
+            animation: 'fadeIn 0.2s ease-in-out',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '1rem', fontWeight: 600 }}>
+            <a href="/#about" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '0.4rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>About</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>01</span>
+            </a>
+            <a href="/#experience" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '0.4rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Experience</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>02</span>
+            </a>
+            <a href="/#projects" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '0.4rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Projects</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>03</span>
+            </a>
+            <a href="/#services" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '0.4rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Services</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>04</span>
+            </a>
+            <a href="/#skills" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '0.4rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Skills</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>05</span>
+            </a>
+            <a href="/#writing" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '0.4rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Writing</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>06</span>
+            </a>
+            <a href="/#testimonials" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '0.4rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Reviews</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>07</span>
+            </a>
+            <a href="/#contact" onClick={closeMobile} style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '0.4rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Contact</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>08</span>
+            </a>
+          </div>
+
+          <div style={{ paddingTop: '0.85rem', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '0.75rem' }}>
+            <a
+              href="/resume.pdf"
+              download="Vaishnav_Gaware_Resume.pdf"
+              className="btn btn-secondary"
+              onClick={closeMobile}
+              style={{ flex: 1, justifyContent: 'center', fontSize: '0.85rem' }}
+            >
+              <FileText size={15} /> Download Resume
+            </a>
+          </div>
         </div>
       )}
     </header>

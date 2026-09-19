@@ -1568,12 +1568,140 @@ svg {
     to { transform: translateX(0); }
 }
 
+/* --- Global Mobile Safeguards & Overflow Protection --- */
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+/* --- Projects Responsive Grid --- */
+.projects-responsive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: 2rem;
+}
+
+/* --- Project Modal Responsive Dual Grid --- */
+.modal-dual-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Mobile Menu Toggle Button Default Hidden on Desktop --- */
+.mobile-menu-btn {
+    display: none;
+}
+
 /* --- Fluid Responsive Breakpoints Across Screens --- */
 @media (max-width: 768px) {
     .section-container {
         padding: 0 1rem;
     }
 
+    /* Navbar & Mobile Navigation */
+    .nav-links {
+        display: none !important;
+    }
+
+    .mobile-menu-btn {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .mobile-menu-btn:hover {
+        background: var(--bg-card-hover);
+        border-color: var(--accent-primary);
+    }
+
+    .cmd-k-btn kbd {
+        display: none !important;
+    }
+
+    .cmd-k-btn {
+        padding: 0.4rem 0.6rem !important;
+    }
+
+    .nav-resume-btn span {
+        display: none;
+    }
+
+    .nav-resume-btn {
+        padding: 0.4rem 0.6rem !important;
+    }
+
+    /* Projects Grid & Cards */
+    .portal-grid, .projects-grid, .skills-grid, .services-grid, .projects-responsive-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.25rem !important;
+    }
+
+    .project-card-body {
+        padding: 1.25rem 1.15rem 1rem 1.15rem !important;
+    }
+
+    .project-card-title {
+        font-size: 1.2rem !important;
+    }
+
+    .project-card-footer {
+        padding: 0.85rem 1.15rem 1rem 1.15rem !important;
+    }
+
+    .metric-chips-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 0.35rem !important;
+        padding: 0.6rem !important;
+    }
+
+    .metric-chip-val {
+        font-size: 0.9rem !important;
+    }
+
+    .metric-chip-label {
+        font-size: 0.65rem !important;
+    }
+
+    /* Project Modal Mobile Polish */
+    .project-modal-backdrop {
+        padding: 0.5rem !important;
+        align-items: flex-end;
+    }
+
+    .project-modal-box {
+        padding: 1.5rem 1.15rem !important;
+        max-height: 92vh !important;
+        border-radius: 16px 16px 0 0 !important;
+        width: 100% !important;
+    }
+
+    .modal-dual-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+
+    .project-modal-actions {
+        flex-direction: column !important;
+        width: 100%;
+        gap: 0.6rem !important;
+    }
+
+    .project-modal-actions .btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    /* Hero & Typography */
     .hero-title {
         font-size: 2.2rem !important;
     }
@@ -1588,6 +1716,11 @@ svg {
 
     .github-stat-item {
         font-size: 0.85rem;
+    }
+
+    /* Contact Section Mobile Polish */
+    .contact-card {
+        padding: 1.35rem 1.15rem !important;
     }
 }
 
@@ -1612,5 +1745,14 @@ svg {
         align-items: center;
         text-align: center;
     }
+
+    .metric-chips-grid {
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)) !important;
+    }
+
+    .project-modal-box {
+        padding: 1.25rem 0.9rem !important;
+    }
 }
+
 

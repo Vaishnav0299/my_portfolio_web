@@ -140,15 +140,15 @@ export function Projects() {
 
         {/* Loading skeleton */}
         {loading && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
+          <div className="projects-responsive-grid">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="glass-card" style={{ height: 380, opacity: 0.5, borderRadius: 14 }} />
             ))}
           </div>
         )}
 
-        {/* Projects 2-Column Responsive Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
+        {/* Projects Responsive Grid */}
+        <div className="projects-responsive-grid">
           {filteredProjects.map((project) => (
             <div
               key={project.id}
@@ -162,7 +162,7 @@ export function Projects() {
                 transition: 'transform 0.25s ease, border-color 0.25s ease',
               }}
             >
-              <div style={{ padding: '1.75rem 1.75rem 1.25rem 1.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+              <div className="project-card-body" style={{ padding: '1.75rem 1.75rem 1.25rem 1.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                 {/* Header: Type Badge & Status (No Stars) */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                   <span className={`badge badge-${project.badgeClass || 'fullstack'}`}>
@@ -186,7 +186,7 @@ export function Projects() {
                 </div>
 
                 {/* Project Title */}
-                <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+                <h3 className="project-card-title" style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
                   {project.name}
                 </h3>
 

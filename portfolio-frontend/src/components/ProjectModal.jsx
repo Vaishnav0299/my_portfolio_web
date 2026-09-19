@@ -83,7 +83,7 @@ export function ProjectModal({ project, isOpen, onClose }) {
 
         {/* Role & Period */}
         {(project.role || project.period) && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1.5rem' }}>
+          <div className="modal-dual-grid" style={{ marginBottom: '1.5rem' }}>
             {project.role && (
               <div style={{ padding: '0.75rem', borderRadius: '8px', background: 'var(--bg-main)', border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -109,7 +109,7 @@ export function ProjectModal({ project, isOpen, onClose }) {
 
         {/* Problem & Solution */}
         {(project.problem || project.solution) && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div className="modal-dual-grid" style={{ marginBottom: '1.5rem' }}>
             {project.problem && (
               <div style={{ padding: '1rem', borderRadius: '10px', background: 'rgba(239, 68, 68, 0.06)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
                 <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700, color: '#ef4444', marginBottom: '0.35rem' }}>
@@ -207,7 +207,7 @@ export function ProjectModal({ project, isOpen, onClose }) {
           if (!hasGithub && !hasLive) return null;
 
           return (
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
+            <div className="project-modal-actions" style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '1px solid var(--border-color)', flexWrap: 'wrap' }}>
               {hasGithub && (
                 <a
                   href={project.github}

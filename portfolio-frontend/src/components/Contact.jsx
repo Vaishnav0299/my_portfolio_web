@@ -106,11 +106,11 @@ export function Contact({ onShowToast }) {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '2.5rem' }}>
           {/* Direct Channels Column */}
           {isEnabled(config, 'contact', 'contactDirectInfo') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div className="glass-card" style={{ padding: '2rem', borderRadius: '16px' }}>
+              <div className="glass-card contact-card" style={{ padding: '2rem', borderRadius: '16px' }}>
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1rem' }}>
                   Direct Channels
                 </h3>
@@ -183,7 +183,7 @@ export function Contact({ onShowToast }) {
               </div>
 
               {/* Social profiles */}
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)', flexWrap: 'wrap' }}>
                 <a
                   href={githubUrl}
                   target="_blank"
@@ -220,7 +220,7 @@ export function Contact({ onShowToast }) {
 
           {/* Form Column */}
           {isEnabled(config, 'contact', 'contactForm') && (
-            <div className="glass-card" style={{ padding: '2rem', borderRadius: '16px' }}>
+            <div className="glass-card contact-card" style={{ padding: '2rem', borderRadius: '16px' }}>
               {isSubmitted ? (
               <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
                 <div
