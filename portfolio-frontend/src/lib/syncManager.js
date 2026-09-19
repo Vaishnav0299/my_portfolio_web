@@ -53,6 +53,12 @@ export async function writeWithSync(op) {
       timestamp: Date.now(),
     }]);
 
+    // Check if the operation was rejected with an error
+    const opResult = result?.results?.find(r => r.operationId === operationId);
+    if (opResult && opResult.status === 'error') {
+      throw new Error(opResult.error || 'Server rejected operation');
+    }
+
     // 3. On success: remove from local queue
     const pending = await getPendingOperations();
     const applied = pending.filter(p => p.operationId === operationId);

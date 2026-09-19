@@ -137,6 +137,8 @@ export function AdminProjects() {
     setForm({
       ...emptyForm,
       ...p,
+      github: p.github ?? '',
+      live: p.live ?? '',
       features: Array.isArray(p.features) ? p.features.join('\n') : (p.features || ''),
       stack: Array.isArray(p.stack) ? p.stack.join(', ') : (p.stack || ''),
       metrics: Array.isArray(p.metrics) && p.metrics.length > 0
@@ -199,21 +201,26 @@ export function AdminProjects() {
     setSaving(true);
     setError('');
 
+    const { id: _id, createdAt: _ca, updatedAt: _ua, ...formData } = form;
     const payload = {
-      ...form,
-      features: typeof form.features === 'string' ? form.features.split('\n').map((s) => s.trim()).filter(Boolean) : (form.features || []),
-      stack: typeof form.stack === 'string' ? form.stack.split(',').map((s) => s.trim()).filter(Boolean) : (form.stack || []),
-      metrics: (form.metrics || []).filter((m) => m.label && m.value),
+      ...formData,
+      live: (formData.live || '').trim(),
+      github: (formData.github || '').trim(),
+      features: typeof formData.features === 'string' ? formData.features.split('\n').map((s) => s.trim()).filter(Boolean) : (formData.features || []),
+      stack: typeof formData.stack === 'string' ? formData.stack.split(',').map((s) => s.trim()).filter(Boolean) : (formData.stack || []),
+      metrics: (formData.metrics || []).filter((m) => m.label && m.value),
       stars: 0,
-      sortOrder: Number(form.sortOrder) || 0,
+      sortOrder: Number(formData.sortOrder) || 0,
     };
 
     try {
       if (editId) {
-        await writeWithSync({ method: 'PUT', url: `/api/projects/admin/${editId}`, body: payload });
+        const res = await writeWithSync({ method: 'PUT', url: `/api/projects/admin/${editId}`, body: payload });
+        if (res && res.error && !res.queued) throw new Error(res.error);
         showToast('Project updated successfully');
       } else {
-        await writeWithSync({ method: 'POST', url: '/api/projects/admin', body: payload });
+        const res = await writeWithSync({ method: 'POST', url: '/api/projects/admin', body: payload });
+        if (res && res.error && !res.queued) throw new Error(res.error);
         showToast('Project created successfully');
       }
       setShowForm(false);

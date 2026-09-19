@@ -76,11 +76,18 @@ projectsRouter.post('/admin', async (c) => {
     return c.json({ success: false, error: 'Validation failed', details: result.error.format() }, 400);
   }
   const body: ProjectInput = result.data;
+  const { id: _id, createdAt: _ca, updatedAt: _ua, ...cleanData } = body as any;
   const opId = crypto.randomUUID();
 
   if (isDbConfigured) {
     try {
-      const [created] = await db.insert(projects).values(body as any).returning();
+      const [created] = await db.insert(projects).values({
+        ...cleanData,
+        live: (cleanData.live ?? '').trim(),
+        github: (cleanData.github ?? '').trim(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any).returning();
       await recordOperation(opId, '/api/projects/admin', 'POST');
       if (created) {
         localStore.projects.push(created as any);
@@ -98,13 +105,13 @@ projectsRouter.post('/admin', async (c) => {
     categoryName: body.categoryName,
     type: body.type,
     badgeClass: body.badgeClass,
-    desc: body.desc,
-    longDesc: body.longDesc,
-    features: body.features,
-    architecture: body.architecture,
-    stack: body.stack,
-    github: body.github,
-    live: body.live,
+    desc: body.desc ?? '',
+    longDesc: body.longDesc ?? '',
+    features: body.features ?? [],
+    architecture: body.architecture ?? '',
+    stack: body.stack ?? [],
+    github: (body.github ?? '').trim(),
+    live: (body.live ?? '').trim(),
     stars: body.stars ?? 0,
     status: body.status,
     sortOrder: body.sortOrder ?? localStore.projects.length + 1,
@@ -140,13 +147,19 @@ projectsRouter.put('/admin/:id', async (c) => {
     return c.json({ success: false, error: 'Validation failed', details: result.error.format() }, 400);
   }
   const body: Partial<ProjectInput> = result.data;
+  const { id: _id, createdAt: _ca, updatedAt: _ua, ...cleanData } = body as any;
   const opId = crypto.randomUUID();
 
   if (isDbConfigured) {
     try {
       const [updated] = await db
         .update(projects)
-        .set({ ...body, updatedAt: new Date() } as any)
+        .set({
+          ...cleanData,
+          ...(cleanData.live !== undefined ? { live: cleanData.live.trim() } : {}),
+          ...(cleanData.github !== undefined ? { github: cleanData.github.trim() } : {}),
+          updatedAt: new Date(),
+        } as any)
         .where(eq(projects.id, id))
         .returning();
       await recordOperation(opId, `/api/projects/admin/${id}`, 'PUT');
@@ -166,7 +179,9 @@ projectsRouter.put('/admin/:id', async (c) => {
 
   localStore.projects[index] = {
     ...localStore.projects[index],
-    ...body,
+    ...cleanData,
+    ...(cleanData.live !== undefined ? { live: cleanData.live.trim() } : {}),
+    ...(cleanData.github !== undefined ? { github: cleanData.github.trim() } : {}),
     updatedAt: new Date().toISOString(),
   } as LocalProject;
 

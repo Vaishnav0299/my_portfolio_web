@@ -196,7 +196,7 @@ export const initialProjects: LocalProject[] = [
       "WebSockets"
     ],
     "github": "https://github.com/Vaishnav0299/Productivity-Pro",
-    "live": "https://productivity-pro-bay.vercel.app",
+    "live": "",
     "stars": 0,
     "status": "Production Ready",
     "sortOrder": 2,

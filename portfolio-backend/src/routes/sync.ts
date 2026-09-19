@@ -218,7 +218,6 @@ sync.post('/', authMiddleware, async (c) => {
 
 /**
  * Applies a queued write operation by dispatching on URL pattern + HTTP method.
- * Dual-mode: writes to Supabase database or local in-memory store.
  */
 async function applyOperation(method: string, url: string, body: unknown) {
   const urlObj = new URL(`http://localhost${url.startsWith('/') ? url : '/' + url}`);
@@ -228,28 +227,62 @@ async function applyOperation(method: string, url: string, body: unknown) {
   const projectMatch = pathname.match(/^\/?(?:api\/)?(?:admin\/projects|projects\/admin)(?:\/([^/?#]+))?$/);
   if (projectMatch) {
     const id = projectMatch[1] ? parseInt(projectMatch[1], 10) : null;
+    const { id: _id, createdAt: _ca, updatedAt: _ua, ...cleanData } = (body || {}) as any;
+    const liveVal = cleanData.live !== undefined ? (cleanData.live ?? '').trim() : undefined;
+    const githubVal = cleanData.github !== undefined ? (cleanData.github ?? '').trim() : undefined;
+
     if (isDbConfigured) {
       try {
-        if (method === 'POST') { await db.insert(projects).values(body as any); }
-        if (method === 'PUT' && id) { await db.update(projects).set(body as any).where(eq(projects.id, id)); }
+        if (method === 'POST') {
+          await db.insert(projects).values({
+            ...cleanData,
+            live: (cleanData.live ?? '').trim(),
+            github: (cleanData.github ?? '').trim(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          } as any);
+        }
+        if (method === 'PUT' && id) {
+          await db.update(projects).set({
+            ...cleanData,
+            ...(liveVal !== undefined ? { live: liveVal } : {}),
+            ...(githubVal !== undefined ? { github: githubVal } : {}),
+            updatedAt: new Date(),
+          } as any).where(eq(projects.id, id));
+        }
         if (method === 'DELETE' && id) {
           console.log(`[Sync] Deleting project id=${id} from Supabase database`);
           await db.delete(projects).where(eq(projects.id, id));
         }
       } catch (err) {
-        console.warn('[Sync] Database write failed, updating local store:', (err as Error).message);
+        console.error('[Sync] Database write failed for projects:', (err as Error).message);
+        throw err;
       }
     }
 
     // Keep local fallback in sync
     if (method === 'POST') {
-      const p = body as any;
-      localStore.projects.push({ ...p, id: ++localStore.nextProjectId });
+      localStore.projects.push({
+        ...cleanData,
+        live: (cleanData.live ?? '').trim(),
+        github: (cleanData.github ?? '').trim(),
+        id: ++localStore.nextProjectId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
       return;
     }
     if (method === 'PUT' && id) {
       const idx = localStore.projects.findIndex(p => p.id === id);
-      if (idx !== -1) localStore.projects[idx] = { ...localStore.projects[idx], ...(body as any) };
+      if (idx !== -1) {
+        localStore.projects[idx] = {
+          ...localStore.projects[idx],
+          ...cleanData,
+          ...(liveVal !== undefined ? { live: liveVal } : {}),
+          ...(githubVal !== undefined ? { github: githubVal } : {}),
+          updatedAt: new Date().toISOString(),
+        };
+      }
       return;
     }
     if (method === 'DELETE' && id) {
@@ -262,31 +295,32 @@ async function applyOperation(method: string, url: string, body: unknown) {
   const skillMatch = pathname.match(/^\/?(?:api\/)?(?:admin\/skills|skills\/admin)(?:\/([^/?#]+))?$/);
   if (skillMatch) {
     const id = skillMatch[1] ? parseInt(skillMatch[1], 10) : null;
+    const { id: _id, createdAt: _ca, updatedAt: _ua, ...cleanData } = (body || {}) as any;
     if (isDbConfigured) {
       try {
-        if (method === 'POST') { await db.insert(skills).values(body as any); }
-        if (method === 'PUT' && id) { await db.update(skills).set(body as any).where(eq(skills.id, id)); }
+        if (method === 'POST') { await db.insert(skills).values({ ...cleanData, updatedAt: new Date() } as any); }
+        if (method === 'PUT' && id) { await db.update(skills).set({ ...cleanData, updatedAt: new Date() } as any).where(eq(skills.id, id)); }
         if (method === 'DELETE' && id) {
           console.log(`[Sync] Deleting skill id=${id} from Supabase database`);
           await db.delete(skills).where(eq(skills.id, id));
         }
       } catch (err) {
-        console.warn('[Sync] Database write failed, updating local store:', (err as Error).message);
+        console.error('[Sync] Database write failed for skills:', (err as Error).message);
+        throw err;
       }
     }
 
     if (method === 'POST') {
-      const s = body as any;
-      localStore.skills.push({ ...s, id: ++localStore.nextSkillId });
+      localStore.skills.push({ ...cleanData, id: ++localStore.nextSkillId, updatedAt: new Date().toISOString() });
       return;
     }
     if (method === 'PUT' && id) {
       const idx = localStore.skills.findIndex(s => s.id === id);
-      if (idx !== -1) localStore.skills[idx] = { ...localStore.skills[idx], ...(body as any) };
+      if (idx !== -1) localStore.skills[idx] = { ...localStore.skills[idx], ...cleanData, updatedAt: new Date().toISOString() };
       return;
     }
     if (method === 'DELETE' && id) {
-      localStore.skills = localStore.skills.filter(p => p.id !== id);
+      localStore.skills = localStore.skills.filter(s => s.id !== id);
       return;
     }
   }
@@ -295,27 +329,28 @@ async function applyOperation(method: string, url: string, body: unknown) {
   const timelineMatch = pathname.match(/^\/?(?:api\/)?(?:admin\/timeline|timeline\/admin)(?:\/([^/?#]+))?$/);
   if (timelineMatch) {
     const id = timelineMatch[1] ? parseInt(timelineMatch[1], 10) : null;
+    const { id: _id, createdAt: _ca, updatedAt: _ua, ...cleanData } = (body || {}) as any;
     if (isDbConfigured) {
       try {
-        if (method === 'POST') { await db.insert(timeline).values(body as any); }
-        if (method === 'PUT' && id) { await db.update(timeline).set(body as any).where(eq(timeline.id, id)); }
+        if (method === 'POST') { await db.insert(timeline).values({ ...cleanData, updatedAt: new Date() } as any); }
+        if (method === 'PUT' && id) { await db.update(timeline).set({ ...cleanData, updatedAt: new Date() } as any).where(eq(timeline.id, id)); }
         if (method === 'DELETE' && id) {
           console.log(`[Sync] Deleting timeline id=${id} from Supabase database`);
           await db.delete(timeline).where(eq(timeline.id, id));
         }
       } catch (err) {
-        console.warn('[Sync] Database write failed, updating local store:', (err as Error).message);
+        console.error('[Sync] Database write failed for timeline:', (err as Error).message);
+        throw err;
       }
     }
 
     if (method === 'POST') {
-      const t = body as any;
-      localStore.timeline.push({ ...t, id: ++localStore.nextTimelineId });
+      localStore.timeline.push({ ...cleanData, id: ++localStore.nextTimelineId, updatedAt: new Date().toISOString() });
       return;
     }
     if (method === 'PUT' && id) {
       const idx = localStore.timeline.findIndex(t => t.id === id);
-      if (idx !== -1) localStore.timeline[idx] = { ...localStore.timeline[idx], ...(body as any) };
+      if (idx !== -1) localStore.timeline[idx] = { ...localStore.timeline[idx], ...cleanData, updatedAt: new Date().toISOString() };
       return;
     }
     if (method === 'DELETE' && id) {
@@ -327,14 +362,16 @@ async function applyOperation(method: string, url: string, body: unknown) {
   // /api/bio/admin or /bio/admin or /api/admin/bio or /admin/bio
   const bioMatch = pathname.match(/^\/?(?:api\/)?(?:admin\/bio|bio\/admin)\/?$/);
   if (bioMatch && method === 'PUT') {
+    const { id: _id, createdAt: _ca, updatedAt: _ua, ...cleanData } = (body || {}) as any;
     if (isDbConfigured) {
       try {
-        await db.update(bio).set(body as any);
+        await db.update(bio).set({ ...cleanData, updatedAt: new Date() } as any);
       } catch (err) {
-        console.warn('[Sync] Database bio write failed:', (err as Error).message);
+        console.error('[Sync] Database bio write failed:', (err as Error).message);
+        throw err;
       }
     }
-    localStore.bio = { ...localStore.bio, ...(body as any) };
+    localStore.bio = { ...localStore.bio, ...cleanData, updatedAt: new Date().toISOString() };
     return;
   }
 
@@ -366,7 +403,8 @@ async function applyOperation(method: string, url: string, body: unknown) {
         if (method === 'PUT' && id) { await db.update(testimonials).set(payload as any).where(eq(testimonials.id, id)); }
         if (method === 'DELETE' && id) { await db.delete(testimonials).where(eq(testimonials.id, id)); }
       } catch (err) {
-        console.warn('[Sync] Database testimonials write failed:', (err as Error).message);
+        console.error('[Sync] Database testimonials write failed:', (err as Error).message);
+        throw err;
       }
     }
 
@@ -389,22 +427,24 @@ async function applyOperation(method: string, url: string, body: unknown) {
   const serviceMatch = pathname.match(/^\/?(?:api\/)?(?:admin\/services|services\/admin)(?:\/([^/?#]+))?$/);
   if (serviceMatch) {
     const id = serviceMatch[1] ? parseInt(serviceMatch[1], 10) : null;
+    const { id: _id, createdAt: _ca, updatedAt: _ua, ...cleanData } = (body || {}) as any;
     if (isDbConfigured) {
       try {
-        if (method === 'POST') { await db.insert(services).values(body as any); }
-        if (method === 'PUT' && id) { await db.update(services).set(body as any).where(eq(services.id, id)); }
+        if (method === 'POST') { await db.insert(services).values({ ...cleanData, updatedAt: new Date() } as any); }
+        if (method === 'PUT' && id) { await db.update(services).set({ ...cleanData, updatedAt: new Date() } as any).where(eq(services.id, id)); }
         if (method === 'DELETE' && id) { await db.delete(services).where(eq(services.id, id)); }
       } catch (err) {
-        console.warn('[Sync] Database services write failed:', (err as Error).message);
+        console.error('[Sync] Database services write failed:', (err as Error).message);
+        throw err;
       }
     }
     if (method === 'POST') {
-      localStore.services.push({ ...(body as any), id: ++localStore.nextServiceId });
+      localStore.services.push({ ...cleanData, id: ++localStore.nextServiceId, updatedAt: new Date().toISOString() });
       return;
     }
     if (method === 'PUT' && id) {
       const idx = localStore.services.findIndex(s => s.id === id);
-      if (idx !== -1) localStore.services[idx] = { ...localStore.services[idx], ...(body as any) };
+      if (idx !== -1) localStore.services[idx] = { ...localStore.services[idx], ...cleanData, updatedAt: new Date().toISOString() };
       return;
     }
     if (method === 'DELETE' && id) {
