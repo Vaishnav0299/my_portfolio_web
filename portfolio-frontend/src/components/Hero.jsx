@@ -128,7 +128,7 @@ export function Hero() {
   const trackItems = skillsList.length > 0 ? skillsList : FALLBACK_SKILLS;
 
   return (
-    <section id="home" className="hero-section" style={{ paddingTop: '5.5rem', paddingBottom: '3.5rem' }}>
+    <section id="home" className="hero-section">
       <div className="hero-container" style={{ maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
         
         {/* Availability / Location Pill */}
@@ -187,7 +187,7 @@ export function Hero() {
 
         {/* Dual CTAs */}
         {isEnabled(config, 'hero', 'heroCta') && (
-          <div className="hero-cta-group" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '3rem' }}>
+          <div className="hero-cta-group" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2rem' }}>
             <a href="#projects" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.6rem' }}>
               <span>Explore Engineering Work</span>
               <ArrowRight size={16} />
@@ -211,7 +211,7 @@ export function Hero() {
 
         {/* Infinite Marquee Tech Stack Strip */}
         {isEnabled(config, 'hero', 'heroMarquee') && effects.marquee !== false && (
-          <div style={{ marginTop: '2.5rem', width: '100%' }}>
+          <div style={{ marginTop: '1.25rem', width: '100%' }}>
             {/* Centered Heading */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', maxWidth: '600px', margin: '0 auto 1.5rem', padding: '0 1.5rem', textAlign: 'center' }}>
               <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, var(--border-color))' }} />
