@@ -5,7 +5,6 @@ export const defaultSubcomponents = {
   heroBadge: true,
   heroTypewriter: true,
   heroCta: true,
-  heroStats: true,
   heroMarquee: true,
   githubStats: true,
   githubLanguages: true,

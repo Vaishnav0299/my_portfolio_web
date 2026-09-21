@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
-import { Save, Check, AlertCircle, Plus, Trash2, GripVertical, Sparkles } from 'lucide-react';
+import { Save, Check, AlertCircle, Sparkles } from 'lucide-react';
 import { api } from '../lib/api';
 
 const FormContext = createContext({ form: {}, handleFieldChange: () => {} });
@@ -46,13 +46,6 @@ export function AdminBio() {
     heroDescription: '',
     typewriterPhrases: '',
     footerTagline: '',
-    // Stats
-    stats: [
-      { label: 'Years of Experience', value: '5+' },
-      { label: 'Projects Shipped', value: '30+' },
-      { label: 'Happy Clients', value: '20+' },
-      { label: 'Production Uptime', value: '99.9%' },
-    ],
   });
   const [loading, setLoading] = useState(true);
   const [saving,  setSaving]  = useState(false);
@@ -67,14 +60,6 @@ export function AdminBio() {
         ...res.data,
         interests: Array.isArray(res.data.interests) ? res.data.interests.join('\n') : (res.data.interests ?? ''),
         typewriterPhrases: Array.isArray(res.data.typewriterPhrases) ? res.data.typewriterPhrases.join('\n') : (res.data.typewriterPhrases ?? ''),
-        stats: Array.isArray(res.data.stats) && res.data.stats.length > 0
-          ? res.data.stats
-          : [
-              { label: 'Years of Experience', value: '5+' },
-              { label: 'Projects Shipped', value: '30+' },
-              { label: 'Happy Clients', value: '20+' },
-              { label: 'Production Uptime', value: '99.9%' },
-            ],
         headlinePrefix: res.data.headlinePrefix ?? '',
         heroDescription: res.data.heroDescription ?? '',
         footerTagline: res.data.footerTagline ?? '',
@@ -103,7 +88,6 @@ export function AdminBio() {
       ...form,
       interests: typeof form.interests === 'string' ? form.interests.split('\n').filter(Boolean) : form.interests,
       typewriterPhrases: typeof form.typewriterPhrases === 'string' ? form.typewriterPhrases.split('\n').filter(Boolean) : form.typewriterPhrases,
-      stats: form.stats.filter(s => s.label.trim() && s.value.trim()),
     };
 
     try {
@@ -122,27 +106,10 @@ export function AdminBio() {
     setForm(f => ({ ...f, [fieldKey]: value }));
   }, []);
 
-  // Stats management
-  const addStat = () => {
-    setForm(f => ({ ...f, stats: [...f.stats, { label: '', value: '' }] }));
-  };
-
-  const removeStat = (idx) => {
-    setForm(f => ({ ...f, stats: f.stats.filter((_, i) => i !== idx) }));
-  };
-
-  const updateStat = (idx, key, val) => {
-    setForm(f => ({
-      ...f,
-      stats: f.stats.map((s, i) => i === idx ? { ...s, [key]: val } : s),
-    }));
-  };
-
   const tabs = [
     { id: 'personal', label: 'Personal Info' },
     { id: 'hero', label: 'Hero Content' },
     { id: 'social', label: 'Social Links' },
-    { id: 'stats', label: 'Hero Stats' },
   ];
 
   if (loading) return <p style={{ color: 'var(--text-muted)' }}>Loading bio…</p>;
@@ -266,78 +233,6 @@ export function AdminBio() {
           </div>
         )}
 
-        {/* Hero Stats Tab */}
-        {activeTab === 'stats' && (
-          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 16, padding: '1.5rem' }}>
-            <div style={sectionHeadStyle}>Hero Metrics Strip</div>
-            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-              These stats appear in the horizontal metrics card on the hero section. Drag to reorder, add or remove as needed.
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {form.stats.map((stat, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.75rem',
-                    padding: '0.65rem 0.85rem',
-                    borderRadius: 10,
-                    background: 'var(--bg-primary)',
-                    border: '1px solid var(--border-color)',
-                  }}
-                >
-                  <GripVertical size={16} style={{ color: 'var(--text-muted)', opacity: 0.5, flexShrink: 0 }} />
-                  <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                    <input
-                      type="text"
-                      value={stat.value}
-                      onChange={e => updateStat(idx, 'value', e.target.value)}
-                      placeholder="5+"
-                      style={{ ...inputStyle, fontWeight: 700, fontSize: '1rem', textAlign: 'center' }}
-                    />
-                    <input
-                      type="text"
-                      value={stat.label}
-                      onChange={e => updateStat(idx, 'label', e.target.value)}
-                      placeholder="Years of Experience"
-                      style={inputStyle}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => removeStat(idx)}
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      width: 32, height: 32, borderRadius: 8,
-                      border: '1px solid rgba(239,68,68,0.3)',
-                      background: 'rgba(239,68,68,0.08)',
-                      color: '#ef4444', cursor: 'pointer', flexShrink: 0,
-                    }}
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              ))}
-
-              <button
-                type="button"
-                onClick={addStat}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem',
-                  padding: '0.6rem', borderRadius: 10,
-                  border: '1px dashed var(--border-color)',
-                  background: 'transparent',
-                  color: 'var(--text-muted)', cursor: 'pointer',
-                  fontSize: '0.82rem', fontWeight: 600,
-                }}
-              >
-                <Plus size={14} /> Add Stat
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Save Button — always visible */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.25rem' }}>

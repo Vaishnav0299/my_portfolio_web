@@ -255,7 +255,6 @@ export async function syncFromDatabase(options: { persistToFile?: boolean } = {}
         bio: row.bio,
         interests: (row.interests as string[]) || [],
         currentFocus: row.currentFocus,
-        stats: (row.stats as any) ?? localStore.bio.stats,
         headlinePrefix: (row as any).headlinePrefix ?? localStore.bio.headlinePrefix ?? '',
         heroDescription: (row as any).heroDescription ?? localStore.bio.heroDescription ?? '',
         typewriterPhrases: (row as any).typewriterPhrases ?? localStore.bio.typewriterPhrases ?? [],
@@ -560,7 +559,6 @@ export async function pushToDatabase(): Promise<{ success: boolean; tables: stri
       bio: localStore.bio.bio,
       interests: localStore.bio.interests as any,
       currentFocus: localStore.bio.currentFocus,
-      stats: localStore.bio.stats as any,
     });
     pushed.push('bio (1 row)');
   } catch (err) {

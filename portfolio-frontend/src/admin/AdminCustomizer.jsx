@@ -21,7 +21,7 @@ import { api } from '../lib/api.js';
 import { useConfig } from '../context/ConfigContext.jsx';
 
 const SECTION_LABELS = [
-  { key: 'hero', label: 'Hero / Headline & Pitch', desc: 'Main intro, quick stats & resume CTA' },
+  { key: 'hero', label: 'Hero / Headline & Pitch', desc: 'Main intro, headline & resume CTA' },
   { key: 'githubStrip', label: 'GitHub Activity Strip', desc: 'Realtime public repos, stars, commits & followers' },
   { key: 'about', label: 'About Me & Philosophy', desc: 'Bio summary & engineering philosophy cards' },
   { key: 'experience', label: 'Work Experience & Timeline', desc: 'Interactive career timeline with milestone details' },
@@ -42,7 +42,6 @@ const COMPONENT_SUBCOMPONENTS = {
     { key: 'heroBadge', label: 'Status Pill / Badge', desc: 'Active availability pulse pill ("AVAILABLE FOR WORK")' },
     { key: 'heroTypewriter', label: 'Animated Typewriter Roles', desc: 'Rotating dynamic title text in headline' },
     { key: 'heroCta', label: 'Action Buttons / CTAs', desc: 'Primary & secondary buttons ("View Projects", "Get in Touch")' },
-    { key: 'heroStats', label: 'Hero Metric Counters', desc: 'Key quick stats (Years exp, production apps, repos)' },
     { key: 'heroMarquee', label: 'Inline Tech Stack Strip', desc: 'Horizontal scrolling tech icons directly under hero' },
   ],
   githubStrip: [

@@ -115,7 +115,6 @@ export const bioSchema = z.object({
   bio:          z.string().min(20),
   interests:    z.array(z.string()).min(1),
   currentFocus: z.string().min(10),
-  stats:        z.array(z.object({ label: z.string(), value: z.string() })).optional(),
   // Hero customization fields
   headlinePrefix:    z.string().optional(),
   heroDescription:   z.string().optional(),

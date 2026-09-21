@@ -19,14 +19,6 @@ const FALLBACK_SKILLS = [
   { name: 'Python' },
 ];
 
-const DEFAULT_STATS = [
-  { label: 'Years of Experience', value: '5+', color: 'var(--accent-primary)' },
-  { label: 'Projects Shipped', value: '30+', color: 'var(--accent-secondary, #06b6d4)' },
-  { label: 'Happy Clients', value: '20+', color: '#f59e0b' },
-  { label: 'Production Uptime', value: '99.9%', color: '#ec4899' },
-];
-
-const STAT_COLORS = ['var(--accent-primary)', 'var(--accent-secondary, #06b6d4)', '#f59e0b', '#ec4899', '#8b5cf6', '#10b981'];
 
 function extractSkillsList(categories) {
   if (!Array.isArray(categories) || categories.length === 0) return [];
@@ -106,7 +98,7 @@ export function Hero() {
   const heroDescription = bioData?.heroDescription || bioData?.bio || 'Senior Full-Stack Developer specializing in high-performance web applications, distributed real-time systems, and pragmatic AI workflows. Scaling systems to millions of daily events with sub-second latencies.';
   const heroLocation = bioData?.location || 'Pune, India · Remote Worldwide';
   const typewriterPhrases = bioData?.typewriterPhrases;
-  const heroStats = bioData?.stats || DEFAULT_STATS;
+
 
   // Render headline with gradient accent on the accented words
   const renderHeadline = (text) => {
@@ -216,35 +208,6 @@ export function Hero() {
           </div>
         )}
 
-        {/* Quick Hero Metrics Strip (Horizontal Row) */}
-        {isEnabled(config, 'hero', 'heroStats') && (
-          <div
-            className="glass-card"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-around',
-              flexWrap: 'wrap',
-              gap: '1.5rem',
-              width: '100%',
-              maxWidth: '860px',
-              margin: '0 auto 2.5rem',
-              padding: '1.5rem 2rem',
-              borderRadius: '16px',
-            }}
-          >
-            {heroStats.map((stat, idx) => (
-              <div key={stat.label} style={{ flex: '1 1 140px', textAlign: 'center' }}>
-                <div style={{ fontSize: '2.25rem', fontWeight: 800, color: stat.color || STAT_COLORS[idx % STAT_COLORS.length], fontFamily: 'var(--font-mono)', lineHeight: 1 }}>
-                  {stat.value}
-                </div>
-                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '0.4rem', fontWeight: 500 }}>
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
 
         {/* Infinite Marquee Tech Stack Strip */}
         {isEnabled(config, 'hero', 'heroMarquee') && effects.marquee !== false && (

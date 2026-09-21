@@ -135,9 +135,10 @@ async function seed() {
         bio TEXT NOT NULL,
         interests JSONB NOT NULL,
         current_focus TEXT NOT NULL,
-        stats JSONB,
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       );
+
+      ALTER TABLE bio DROP COLUMN IF EXISTS stats;
 
       CREATE TABLE IF NOT EXISTS messages (
         id SERIAL PRIMARY KEY,
@@ -499,7 +500,6 @@ async function seed() {
       bio: initialBio.bio,
       interests: initialBio.interests,
       currentFocus: initialBio.currentFocus,
-      stats: initialBio.stats as any,
     });
     console.log('  ✓ Bio seeded');
 

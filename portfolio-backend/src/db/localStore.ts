@@ -684,24 +684,6 @@ export const initialBio = {
     "Open-Source Software & Developer Utilities"
   ],
   "currentFocus": "Deepening expertise in Linux system administration and server management, and building automated, scalable deployment pipelines with Docker, Kubernetes, and CI/CD.",
-  "stats": [
-    {
-      "label": "Projects Shipped",
-      "value": "10+"
-    },
-    {
-      "label": "Tech Stack Skills",
-      "value": "15+"
-    },
-    {
-      "label": "Code Commits",
-      "value": "500+"
-    },
-    {
-      "label": "Production Uptime",
-      "value": "99.9%"
-    }
-  ],
   "headlinePrefix": "Crafting Systems & Software",
   "heroDescription": "Full-Stack Developer and AI & Data Science undergraduate building production-grade web applications, ML-driven systems, and data pipelines.",
   "typewriterPhrases": [

@@ -30,7 +30,6 @@ bioRouter.get('/', async (c) => {
           bio: row.bio,
           interests: (row.interests as string[]) || [],
           currentFocus: row.currentFocus,
-          stats: (row.stats as any) ?? localStore.bio.stats,
           headlinePrefix: (row as any).headlinePrefix ?? localStore.bio.headlinePrefix ?? '',
           heroDescription: (row as any).heroDescription ?? localStore.bio.heroDescription ?? '',
           typewriterPhrases: (row as any).typewriterPhrases ?? localStore.bio.typewriterPhrases ?? [],
@@ -67,7 +66,6 @@ bioRouter.put('/admin', async (c) => {
         localStore.bio = {
           ...localStore.bio,
           ...body,
-          stats: (body.stats as any) ?? localStore.bio.stats,
           updatedAt: new Date().toISOString(),
         };
         return c.json({ success: true, data: updated });
@@ -80,7 +78,6 @@ bioRouter.put('/admin', async (c) => {
   localStore.bio = {
     ...localStore.bio,
     ...body,
-    stats: (body.stats as any) ?? localStore.bio.stats,
     updatedAt: new Date().toISOString(),
   };
 

@@ -40,7 +40,6 @@ const SUBCOMPONENTS = {
     { key: 'heroBadge', label: 'Status Pill ("Available for Work")' },
     { key: 'heroTypewriter', label: 'Rotating Animated Roles' },
     { key: 'heroCta', label: 'Action Buttons (Projects / Contact)' },
-    { key: 'heroStats', label: 'Metric Counters (3+ yrs, apps, repos)' },
     { key: 'heroMarquee', label: 'Inline Tech Stack Strip' },
   ],
   githubStrip: [

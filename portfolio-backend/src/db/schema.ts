@@ -116,7 +116,6 @@ export const bio = pgTable('bio', {
   bio:          text('bio').notNull(),
   interests:    jsonb('interests').notNull().$type<string[]>(),
   currentFocus: text('current_focus').notNull(),
-  stats:        jsonb('stats').$type<Array<{ label: string; value: string }>>(),
   updatedAt:    timestamp('updated_at', { withTimezone: true }).defaultNow(),
 });
 
