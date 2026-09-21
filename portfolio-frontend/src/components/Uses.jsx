@@ -58,7 +58,7 @@ export function Uses() {
 
   return (
     <section id="uses" className="section" style={{ padding: '5rem 0' }}>
-      <div className="section-container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem' }}>
+      <div className="section-container">
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <span className="pulse-pill" style={{ marginBottom: '0.75rem' }}>
             SETUP &amp; GEAR
@@ -71,7 +71,7 @@ export function Uses() {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.5rem' }}>
           {categories.map((cat, idx) => (
             <div key={idx} className="glass-card" style={{ padding: '1.75rem', borderRadius: '14px' }}>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

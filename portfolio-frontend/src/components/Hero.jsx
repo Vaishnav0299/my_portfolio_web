@@ -124,12 +124,13 @@ export function Hero() {
     return <span className="gradient-text">{trimmed}</span>;
   };
 
-  // Use strictly unique items in each track so no duplicates appear within a cycle
-  const trackItems = skillsList.length > 0 ? skillsList : FALLBACK_SKILLS;
+  // Ensure enough items for wide/zoomed screens (at least 16 items for infinite seamless scroll)
+  const baseSkills = skillsList.length > 0 ? skillsList : FALLBACK_SKILLS;
+  const trackItems = baseSkills.length < 16 ? [...baseSkills, ...baseSkills, ...baseSkills] : baseSkills;
 
   return (
     <section id="home" className="hero-section">
-      <div className="hero-container" style={{ maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
+      <div className="hero-container">
         
         {/* Availability / Location Pill */}
         {isEnabled(config, 'hero', 'heroBadge') && (
@@ -160,7 +161,7 @@ export function Hero() {
         )}
 
         {/* Main Hero Headline */}
-        <h1 className="hero-title" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.15, marginBottom: '1rem' }}>
+        <h1 className="hero-title" style={{ fontSize: 'clamp(1.85rem, 5.2vw, 3.8rem)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.15, marginBottom: '1rem' }}>
           {renderHeadline(rawHeadline)}
         </h1>
 
@@ -207,75 +208,71 @@ export function Hero() {
             </a>
           </div>
         )}
+      </div>
 
+      {/* Infinite Marquee Tech Stack Strip — 100% width of full-width hero-section */}
+      {isEnabled(config, 'hero', 'heroMarquee') && effects.marquee !== false && (
+        <div className="hero-marquee-wrapper" style={{ marginTop: '1.25rem', width: '100%', overflow: 'hidden' }}>
+          {/* Centered Heading */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', maxWidth: '600px', margin: '0 auto 1.25rem', padding: '0 1rem', textAlign: 'center' }}>
+            <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, var(--border-color))' }} />
+            <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--text-muted)', fontWeight: 600, whiteSpace: 'nowrap', textAlign: 'center' }}>
+              Core Technologies &amp; Tooling
+            </span>
+            <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, var(--border-color), transparent)' }} />
+          </div>
 
-        {/* Infinite Marquee Tech Stack Strip */}
-        {isEnabled(config, 'hero', 'heroMarquee') && effects.marquee !== false && (
-          <div style={{ marginTop: '1.25rem', width: '100%' }}>
-            {/* Centered Heading */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', maxWidth: '600px', margin: '0 auto 1.5rem', padding: '0 1.5rem', textAlign: 'center' }}>
-              <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, var(--border-color))' }} />
-              <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--text-muted)', fontWeight: 600, whiteSpace: 'nowrap', textAlign: 'center' }}>
-                Core Technologies &amp; Tooling
-              </span>
-              <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, var(--border-color), transparent)' }} />
+          {/* Marquee Track */}
+          <div className="marquee-container" style={{ width: '100%', overflow: 'hidden' }}>
+            <div className="marquee-track hero-marquee-track">
+              {trackItems.map((item, idx) => (
+                <span
+                  key={`t1-${idx}`}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '0.45rem 1.15rem',
+                    borderRadius: '10px',
+                    background: 'var(--bg-surface)',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--text-secondary)',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                  }}
+                >
+                  {item.name}
+                </span>
+              ))}
             </div>
-
-            {/* Edge-to-edge Marquee Track */}
-            <div style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)', overflow: 'hidden' }}>
-              <div className="marquee-container">
-              <div className="marquee-track hero-marquee-track">
-                {trackItems.map((item, idx) => (
-                  <span
-                    key={`t1-${idx}`}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      padding: '0.45rem 1.15rem',
-                      borderRadius: '10px',
-                      background: 'var(--bg-surface)',
-                      border: '1px solid var(--border-color)',
-                      color: 'var(--text-secondary)',
-                      fontSize: '0.875rem',
-                      fontWeight: 500,
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0,
-                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
-                    }}
-                  >
-                    {item.name}
-                  </span>
-                ))}
-              </div>
-              <div className="marquee-track hero-marquee-track" aria-hidden="true">
-                {trackItems.map((item, idx) => (
-                  <span
-                    key={`t2-${idx}`}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      padding: '0.45rem 1.15rem',
-                      borderRadius: '10px',
-                      background: 'var(--bg-surface)',
-                      border: '1px solid var(--border-color)',
-                      color: 'var(--text-secondary)',
-                      fontSize: '0.875rem',
-                      fontWeight: 500,
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0,
-                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
-                    }}
-                  >
-                    {item.name}
-                  </span>
-                ))}
-              </div>
-            </div>
+            <div className="marquee-track hero-marquee-track" aria-hidden="true">
+              {trackItems.map((item, idx) => (
+                <span
+                  key={`t2-${idx}`}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '0.45rem 1.15rem',
+                    borderRadius: '10px',
+                    background: 'var(--bg-surface)',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--text-secondary)',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                  }}
+                >
+                  {item.name}
+                </span>
+              ))}
             </div>
           </div>
-        )}
-
-      </div>
+        </div>
+      )}
     </section>
   );
 }

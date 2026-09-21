@@ -288,17 +288,28 @@ svg {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 5rem 1.5rem 2.5rem;
+    padding: 5rem 0 2rem;
     text-align: center;
     width: 100%;
     box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .hero-container {
-    max-width: 800px;
+    width: 100%;
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-sizing: border-box;
+}
+
+.hero-marquee-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .hero-avatar-wrapper {
@@ -402,11 +413,25 @@ svg {
     flex-wrap: wrap;
 }
 
+/* --- Standard Section Containers --- */
+.section-container,
+.nav-container,
+.footer-container {
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    box-sizing: border-box;
+}
+
+
 /* --- Directory Portal & Cards --- */
 .portal-section, .projects-section, .skills-section, .timeline-section, .about-section, .contact-section {
-    padding: 4rem 1.5rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 4rem 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .section-header {
@@ -429,7 +454,7 @@ svg {
 
 .portal-grid, .projects-grid, .skills-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
     gap: 1.5rem;
 }
 
@@ -1596,13 +1621,26 @@ html, body {
     display: none;
 }
 
-/* --- Fluid Responsive Breakpoints Across Screens --- */
-@media (max-width: 768px) {
-    .section-container {
-        padding: 0 1rem;
+/* --- Large Screens, 4K & Android TV (50"+ / 2K / 4K / Zoom Out) --- */
+@media (min-width: 1800px) {
+    .section-container,
+    .nav-container,
+    .footer-container,
+    .github-strip-inner {
+        max-width: 1400px;
     }
 
-    /* Navbar & Mobile Navigation */
+    .hero-container {
+        max-width: 1150px;
+    }
+
+    .hero-title {
+        font-size: 4rem;
+    }
+}
+
+/* --- Tablet Breakpoint: Cleanly Collapse Nav Links --- */
+@media (max-width: 992px) {
     .nav-links {
         display: none !important;
     }
@@ -1624,6 +1662,13 @@ html, body {
     .mobile-menu-btn:hover {
         background: var(--bg-card-hover);
         border-color: var(--accent-primary);
+    }
+}
+
+/* --- Fluid Responsive Breakpoints Across Screens --- */
+@media (max-width: 768px) {
+    .section-container {
+        padding: 0 1rem;
     }
 
     .cmd-k-btn kbd {
@@ -1727,14 +1772,30 @@ html, body {
 }
 
 @media (max-width: 480px) {
+    .section-container,
+    .nav-container,
+    .footer-container,
+    .hero-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
     .hero-section {
         padding-top: 4.5rem !important;
-        padding-bottom: 2.5rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    .hero-title {
+        font-size: 1.85rem !important;
+        line-height: 1.2 !important;
     }
 
     .hero-cta-group {
         flex-direction: column;
         width: 100%;
+        max-width: 300px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .hero-cta-group .btn {
@@ -1742,10 +1803,15 @@ html, body {
         justify-content: center;
     }
 
+    .cmd-k-btn, .nav-resume-btn {
+        display: none !important;
+    }
+
     .github-strip-inner {
         flex-direction: column;
         align-items: center;
         text-align: center;
+        gap: 1rem !important;
     }
 
     .metric-chips-grid {
@@ -1754,6 +1820,10 @@ html, body {
 
     .project-modal-box {
         padding: 1.25rem 0.9rem !important;
+    }
+
+    .about-card, .contact-info-card, .contact-form-card, .portfolio-card {
+        padding: 1.25rem 1rem !important;
     }
 }
 

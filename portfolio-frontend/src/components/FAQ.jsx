@@ -33,7 +33,7 @@ export function FAQ() {
 
   return (
     <section id="faq" className="section" style={{ padding: '5rem 0' }}>
-      <div className="section-container" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 1.5rem' }}>
+      <div className="section-container">
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <span className="pulse-pill" style={{ marginBottom: '0.75rem' }}>
             COMMON QUESTIONS
@@ -46,7 +46,7 @@ export function FAQ() {
           </p>
         </div>
 
-        <div>
+        <div style={{ maxWidth: '850px', margin: '0 auto' }}>
           {FAQS.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (

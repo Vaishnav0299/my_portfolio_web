@@ -28,7 +28,7 @@ export function Footer() {
 
   return (
     <footer className="footer" style={{ borderTop: '1px solid var(--border-color)', background: 'var(--bg-main)', padding: '3.5rem 1.5rem 2.5rem' }}>
-      <div className="footer-container" style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <div className="footer-container" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         
         {/* Top footer row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '2rem' }}>

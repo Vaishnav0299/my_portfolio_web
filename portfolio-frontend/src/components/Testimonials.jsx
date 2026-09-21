@@ -129,7 +129,7 @@ export function Testimonials() {
 
   return (
     <section id="testimonials" className="section" style={{ padding: '5rem 0', background: 'var(--bg-main)' }}>
-      <div className="section-container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem', marginBottom: '2.5rem', textAlign: 'center' }}>
+      <div className="section-container" style={{ marginBottom: '2.5rem', textAlign: 'center' }}>
         <span className="pulse-pill" style={{ marginBottom: '0.75rem' }}>
           SOCIAL PROOF
         </span>
@@ -170,7 +170,7 @@ export function Testimonials() {
           </div>
         </div>
       ) : (
-        <div className="section-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', maxWidth: 1200, margin: '0 auto', padding: '1rem 1.5rem' }}>
+        <div className="section-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.5rem', padding: '1rem 1.5rem' }}>
           {items.map((item, index) => (
             <TestimonialCard
               key={item.id || index}

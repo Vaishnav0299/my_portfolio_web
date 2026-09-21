@@ -34,7 +34,7 @@ export function About() {
 
   return (
     <section id="about" className="section" style={{ padding: '5rem 0' }}>
-      <div className="section-container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1.5rem' }}>
+      <div className="section-container">
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <span className="pulse-pill" style={{ marginBottom: '0.75rem' }}>
             IDENTITY &amp; PHILOSOPHY
@@ -47,7 +47,7 @@ export function About() {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '2rem' }}>
           {/* Identity Card */}
           {isEnabled(config, 'about', 'aboutBioCard') && (
           <div className="glass-card" style={{ padding: '2rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>

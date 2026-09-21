@@ -48,7 +48,7 @@ export function Skills() {
 
   return (
     <section id="skills" className="section" style={{ padding: '5rem 0' }}>
-      <div className="section-container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem' }}>
+      <div className="section-container">
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <span className="pulse-pill" style={{ marginBottom: '0.75rem' }}>
             PROFICIENCY MATRIX
@@ -65,7 +65,7 @@ export function Skills() {
           ref={gridRef}
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
             gap: '2rem',
           }}
         >

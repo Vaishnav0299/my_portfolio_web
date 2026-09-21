@@ -39,7 +39,7 @@ const STEPS = [
 export function Process() {
   return (
     <section id="process" className="section" style={{ padding: '5rem 0' }}>
-      <div className="section-container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem' }}>
+      <div className="section-container">
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <span className="pulse-pill" style={{ marginBottom: '0.75rem' }}>
             HOW I WORK

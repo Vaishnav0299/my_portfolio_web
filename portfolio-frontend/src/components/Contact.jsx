@@ -93,7 +93,7 @@ export function Contact({ onShowToast }) {
 
   return (
     <section id="contact" className="section" style={{ padding: '5rem 0' }}>
-      <div className="section-container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1.5rem' }}>
+      <div className="section-container">
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <span className="pulse-pill" style={{ marginBottom: '0.75rem' }}>
             START A CONVERSATION
@@ -106,7 +106,7 @@ export function Contact({ onShowToast }) {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '2.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '2.5rem' }}>
           {/* Direct Channels Column */}
           {isEnabled(config, 'contact', 'contactDirectInfo') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

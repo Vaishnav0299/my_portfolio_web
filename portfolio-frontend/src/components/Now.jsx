@@ -27,7 +27,7 @@ export function Now() {
 
   return (
     <section id="now" className="section" style={{ padding: '5rem 0', background: 'var(--bg-main)' }}>
-      <div className="section-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 1.5rem' }}>
+      <div className="section-container">
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
           <span className="pulse-pill" style={{ marginBottom: '0.75rem' }}>
             CURRENT FOCUS
@@ -40,7 +40,7 @@ export function Now() {
           </p>
         </div>
 
-        <div className="glass-card" style={{ padding: '2rem', borderRadius: '16px' }}>
+        <div className="glass-card" style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem', borderRadius: '16px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {items.map((item, idx) => (
               <div

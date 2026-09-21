@@ -9,7 +9,7 @@ export function Navbar({ onOpenCmd, theme, onToggleTheme }) {
 
   return (
     <header className="navbar glass" style={{ position: 'sticky', top: 0, zIndex: 100 }}>
-      <div className="nav-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1.5rem', maxWidth: '1200px', margin: '0 auto' }}>
+      <div className="nav-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1.5rem' }}>
         {/* Logo */}
         <Link to="/" className="nav-logo" onClick={closeMobile} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', fontWeight: 800, fontSize: '1.15rem', color: 'var(--text-primary)' }}>
           <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#8b5cf6', display: 'inline-block' }} />
