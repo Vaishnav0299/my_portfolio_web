@@ -31,6 +31,7 @@ import { AdminFaq }          from './admin/AdminFaq';
 import { AdminNowUses }      from './admin/AdminNowUses';
 import { AdminMessages }     from './admin/AdminMessages';
 import { AdminBio }          from './admin/AdminBio';
+import { AdminDocuments }    from './admin/AdminDocuments';
 
 const ACCENT_MAP = {
   violet:  { primary: '#8b5cf6', gradient: 'linear-gradient(135deg, #8b5cf6, #06b6d4)' },
@@ -82,6 +83,7 @@ function PortfolioApp() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="dashboard"    element={<AdminDashboard />} />
+          <Route path="documents"    element={<AdminDocuments />} />
           <Route path="customizer"   element={<AdminCustomizer />} />
           <Route path="projects"     element={<AdminProjects />} />
           <Route path="services"     element={<AdminServices />} />

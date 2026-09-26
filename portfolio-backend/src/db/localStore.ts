@@ -828,6 +828,45 @@ export interface LocalFaq {
 
 export const initialFaqs: LocalFaq[] = [];
 
+export interface LocalDocument {
+  id: number;
+  title: string;
+  category: 'resume' | 'certificate' | 'transcript' | 'whitepaper' | 'recommendation' | 'other';
+  description?: string;
+  sourceType: 'local_upload' | 'gdrive_link' | 'external_url';
+  fileUrl: string;
+  driveUrl?: string;
+  downloadUrl: string;
+  previewUrl?: string;
+  fileName: string;
+  fileSize?: string;
+  mimeType?: string;
+  isPrimaryResume: boolean;
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export const initialDocuments: LocalDocument[] = [
+  {
+    id: 1,
+    title: 'Vaishnav Gaware — Full-Stack & AI Engineer Resume',
+    category: 'resume',
+    description: 'Current technical resume covering full-stack architecture, machine learning systems, and cloud infrastructure.',
+    sourceType: 'local_upload',
+    fileUrl: '/resume.pdf',
+    downloadUrl: '/resume.pdf',
+    previewUrl: '/resume.pdf',
+    fileName: 'Vaishnav_Gaware_Resume.pdf',
+    fileSize: '180 KB',
+    mimeType: 'application/pdf',
+    isPrimaryResume: true,
+    sortOrder: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+];
+
 // In-Memory store instances for local development & fallback
 class LocalStore {
   projects: LocalProject[] = [...initialProjects];
@@ -840,6 +879,7 @@ class LocalStore {
   uses = [...usesData];
   now = [...nowData];
   faqs: LocalFaq[] = [...initialFaqs];
+  documents: LocalDocument[] = [...initialDocuments];
   siteConfig: SiteConfig = { ...initialSiteConfig };
   githubStats = [...githubStats];
   messages: Array<{ id: number; name: string; email: string; message: string; role?: string; createdAt: string }> = [];
@@ -853,7 +893,9 @@ class LocalStore {
   nextBlogId = 100;
   nextFaqId = 100;
   nextNowId = 100;
+  nextDocumentId = 100;
   nextMessageId = 1;
 }
 
 export const localStore = new LocalStore();
+

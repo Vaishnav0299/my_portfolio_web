@@ -70,6 +70,16 @@ export function runPythonGithubSync(): Promise<{ success: boolean; output?: stri
 }
 
 /**
+ * POST /api/sync/schema
+ * Trigger on-demand automatic Supabase database schema synchronization.
+ */
+sync.post('/schema', authMiddleware, async (c) => {
+  const { autoMigrateSchema } = await import('../db/autoMigrate.js');
+  const result = await autoMigrateSchema();
+  return c.json(result);
+});
+
+/**
  * POST /api/sync/db
  * Trigger an immediate manual re-sync from Supabase into server memory AND execute Python GitHub telemetry sync.
  */

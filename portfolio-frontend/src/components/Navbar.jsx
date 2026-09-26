@@ -1,9 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { Search, Sun, Moon, FileText, Menu, X } from 'lucide-react';
+import { api } from '../lib/api';
 
 export function Navbar({ onOpenCmd, theme, onToggleTheme }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [resumeUrl, setResumeUrl] = useState('/resume.pdf');
+
+  useEffect(() => {
+    const fetchResume = async () => {
+      try {
+        const res = await api.getBio();
+        if (res.data?.resumeUrl) {
+          setResumeUrl(res.data.resumeUrl);
+        }
+      } catch {
+        // Keep fallback
+      }
+    };
+    fetchResume();
+    window.addEventListener('db-synced', fetchResume);
+    return () => window.removeEventListener('db-synced', fetchResume);
+  }, []);
 
   const closeMobile = () => setMobileMenuOpen(false);
 
@@ -43,8 +61,10 @@ export function Navbar({ onOpenCmd, theme, onToggleTheme }) {
           </button>
 
           <a
-            href="/resume.pdf"
+            href={resumeUrl}
             download="Vaishnav_Gaware_Resume.pdf"
+            target={resumeUrl.startsWith('http') ? '_blank' : undefined}
+            rel="noreferrer"
             className="btn btn-secondary nav-resume-btn"
             style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.4rem 0.75rem', fontSize: '0.8rem' }}
           >
@@ -125,8 +145,10 @@ export function Navbar({ onOpenCmd, theme, onToggleTheme }) {
 
           <div style={{ paddingTop: '0.85rem', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '0.75rem' }}>
             <a
-              href="/resume.pdf"
+              href={resumeUrl}
               download="Vaishnav_Gaware_Resume.pdf"
+              target={resumeUrl.startsWith('http') ? '_blank' : undefined}
+              rel="noreferrer"
               className="btn btn-secondary"
               onClick={closeMobile}
               style={{ flex: 1, justifyContent: 'center', fontSize: '0.85rem' }}

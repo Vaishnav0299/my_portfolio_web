@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import {
   LayoutDashboard,
   Sliders,
+  FileText,
   Package,
   Briefcase,
   Wrench,
@@ -23,6 +24,7 @@ import { api } from '../lib/api';
 
 const navItems = [
   { to: '/admin/dashboard',    icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/admin/documents',    icon: FileText,        label: 'Documents & Resume' },
   { to: '/admin/customizer',   icon: Sliders,          label: 'Site Customizer' },
   { to: '/admin/projects',     icon: Package,          label: 'Projects' },
   { to: '/admin/services',     icon: Briefcase,        label: 'Services' },

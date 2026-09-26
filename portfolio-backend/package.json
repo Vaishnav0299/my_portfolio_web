@@ -9,6 +9,8 @@
     "seed": "tsx src/db/seed.ts",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

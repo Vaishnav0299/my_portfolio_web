@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
-import { Save, Check, AlertCircle, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Save, Check, AlertCircle, Sparkles, FileText } from 'lucide-react';
 import { api } from '../lib/api';
 
 const FormContext = createContext({ form: {}, handleFieldChange: () => {} });
@@ -170,8 +171,18 @@ export function AdminBio() {
             <Field label="Title *"        fieldKey="title" placeholder="Full-Stack Developer & AI Systems Engineer" />
             <Field label="Education *"    fieldKey="education" />
             <Field label="Location *"     fieldKey="location" placeholder="Pune, India (Open to Remote Worldwide)" helpText="Shown in Hero pill, About card, and Contact section" />
-            <Field label="Email *"        fieldKey="email" type="email" helpText="Used for Contact copy button, mailto links, and footer" />
-            <Field label="Resume URL"     fieldKey="resumeUrl" placeholder="/resume.pdf" />
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.3rem' }}>
+                <label style={labelStyle}>Resume URL</label>
+                <Link
+                  to="/admin/documents"
+                  style={{ fontSize: '0.72rem', color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}
+                >
+                  <FileText size={12} /> Manage in Document Studio →
+                </Link>
+              </div>
+              <Field label="" fieldKey="resumeUrl" placeholder="/resume.pdf or Google Drive link" helpText="Direct file path or Google Drive link synced with Document Studio" />
+            </div>
             <Field label="Avatar URL"     fieldKey="avatarUrl" full />
             <Field label="Bio Text *"     fieldKey="bio" full textarea rows={4} helpText="Main bio paragraph shown on the About page" />
             <Field label="Current Focus"  fieldKey="currentFocus" full textarea rows={3} />

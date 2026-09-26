@@ -1,22 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { GraduationCap, MapPin, Mail, Github, Linkedin, Twitter, ArrowUpRight } from 'lucide-react';
+import { GraduationCap, MapPin, Mail, Github, Linkedin, Twitter, ArrowUpRight, FileText, Award, Eye, Download } from 'lucide-react';
 import { api } from '../lib/api';
 import { useConfig, isEnabled } from '../context/ConfigContext.jsx';
+import { DocumentViewerModal } from './DocumentViewerModal.jsx';
 
 export function About() {
   const { config } = useConfig();
   const [bioData, setBioData] = useState(null);
+  const [documentsList, setDocumentsList] = useState([]);
+  const [viewingDoc, setViewingDoc] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
-    api.getBio()
-      .then((res) => {
-        if (isMounted && res?.data) {
-          setBioData(res.data);
-        }
-      })
-      .catch(() => {});
-    return () => { isMounted = false; };
+    Promise.allSettled([
+      api.getBio(),
+      api.getDocuments(),
+    ]).then(([bioRes, docsRes]) => {
+      if (!isMounted) return;
+      if (bioRes.status === 'fulfilled' && bioRes.value?.data) {
+        setBioData(bioRes.value.data);
+      }
+      if (docsRes.status === 'fulfilled' && Array.isArray(docsRes.value?.data)) {
+        setDocumentsList(docsRes.value.data);
+      }
+    });
+
+    const handleSync = () => {
+      api.getDocuments().then(res => res?.data && setDocumentsList(res.data)).catch(() => {});
+      api.getBio().then(res => res?.data && setBioData(res.data)).catch(() => {});
+    };
+    window.addEventListener('db-synced', handleSync);
+    return () => {
+      isMounted = false;
+      window.removeEventListener('db-synced', handleSync);
+    };
   }, []);
 
   const name = bioData?.name || 'Vaishnav Gaware';
@@ -166,10 +183,80 @@ export function About() {
                 {currentFocus}
               </p>
             </div>
+
+            {/* Verified Resume & Document Assets Card */}
+            {documentsList.length > 0 && (
+              <div className="glass-card" style={{ padding: '1.75rem', borderRadius: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                    Verified Credentials &amp; Documents
+                  </h3>
+                  <span style={{ fontSize: '0.75rem', padding: '0.15rem 0.5rem', borderRadius: 8, background: 'rgba(139,92,246,0.15)', color: 'var(--accent-primary)', fontWeight: 600 }}>
+                    {documentsList.length} Available
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {documentsList.slice(0, 4).map((doc) => (
+                    <div
+                      key={doc.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '0.65rem 0.85rem',
+                        borderRadius: 12,
+                        background: 'var(--bg-primary)',
+                        border: doc.isPrimaryResume ? '1px solid var(--accent-primary)' : '1px solid var(--border-color)',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', overflow: 'hidden' }}>
+                        <div style={{ color: doc.isPrimaryResume ? 'var(--accent-primary)' : 'var(--text-muted)', flexShrink: 0 }}>
+                          {doc.category === 'certificate' ? <Award size={16} /> : doc.category === 'transcript' ? <GraduationCap size={16} /> : <FileText size={16} />}
+                        </div>
+                        <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {doc.title}
+                          </div>
+                          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                            {doc.sourceType === 'gdrive_link' ? 'Google Drive Link' : 'Local File'} {doc.fileSize ? `• ${doc.fileSize}` : ''}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexShrink: 0 }}>
+                        <button
+                          onClick={() => setViewingDoc(doc)}
+                          title="Preview Document"
+                          style={{ padding: '0.35rem 0.55rem', borderRadius: 8, border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.75rem' }}
+                        >
+                          <Eye size={12} /> Preview
+                        </button>
+                        <a
+                          href={doc.downloadUrl || doc.fileUrl}
+                          download={doc.fileName || 'document.pdf'}
+                          target="_blank"
+                          rel="noreferrer"
+                          title="Download Document"
+                          style={{ padding: '0.35rem 0.55rem', borderRadius: 8, border: '1px solid var(--border-color)', background: 'var(--bg-surface)', color: 'var(--text-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.75rem' }}
+                        >
+                          <Download size={12} />
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           )}
         </div>
       </div>
+
+      {/* Document Viewer Modal */}
+      {viewingDoc && (
+        <DocumentViewerModal doc={viewingDoc} onClose={() => setViewingDoc(null)} />
+      )}
     </section>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Package,
+  FileText,
   Mail,
   BookOpen,
   Wrench,
@@ -57,6 +58,7 @@ export function AdminDashboard() {
   const [lastChecked, setLastChecked] = useState(null);
   const [loading, setLoading] = useState(true);
   const [syncingDb, setSyncingDb] = useState(false);
+  const [syncingSchema, setSyncingSchema] = useState(false);
   const [togglingKey, setTogglingKey] = useState(null);
   const [toast, setToast] = useState('');
 
@@ -133,6 +135,20 @@ export function AdminDashboard() {
       showToast(err.message || 'Sync failed');
     } finally {
       setSyncingDb(false);
+    }
+  };
+
+  const handleSyncSchema = async () => {
+    setSyncingSchema(true);
+    try {
+      const res = await api.syncSchema();
+      showToast(res.message || 'Supabase schema synchronized successfully!');
+      await fetchAllData();
+      window.dispatchEvent(new Event('db-synced'));
+    } catch (err) {
+      showToast(err.message || 'Schema sync failed');
+    } finally {
+      setSyncingSchema(false);
     }
   };
 
@@ -227,15 +243,23 @@ export function AdminDashboard() {
     { key: 'githubStrip', label: 'GitHub Strip' },
   ];
 
-  // All 10 CMS modules directory
+  // All CMS modules directory
   const cmsModules = [
+    {
+      title: 'Documents & Resume Studio',
+      desc: 'Upload local resumes/certificates or connect Google Drive links with 1-click live site sync.',
+      icon: FileText,
+      path: '/admin/documents',
+      badge: 'Resume & Cloud Drive',
+      color: '#8b5cf6',
+    },
     {
       title: 'Site Customizer',
       desc: 'Toggle components, tweak theme accents, hero typewriter, and visual effects.',
       icon: Sliders,
       path: '/admin/customizer',
       badge: 'Visual Editor',
-      color: '#8b5cf6',
+      color: '#06b6d4',
     },
     {
       title: 'Projects Showcase',
@@ -429,6 +453,29 @@ export function AdminDashboard() {
           >
             <Database style={{ width: 14, height: 14, color: '#10b981' }} />
             {syncingDb ? 'Syncing...' : 'Sync DB'}
+          </button>
+
+          <button
+            onClick={handleSyncSchema}
+            disabled={syncingSchema}
+            title="Auto-migrate and verify Supabase database tables & columns"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              padding: '0.55rem 0.95rem',
+              borderRadius: 10,
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-primary)',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <ShieldCheck style={{ width: 14, height: 14, color: 'var(--accent-primary)' }} />
+            {syncingSchema ? 'Migrating...' : 'Sync Schema'}
           </button>
 
           <Link

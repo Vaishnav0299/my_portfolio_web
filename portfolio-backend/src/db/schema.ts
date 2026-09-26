@@ -156,4 +156,25 @@ export const faqs = pgTable('faqs', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 });
 
+// ─── documents (resume, certificates, transcripts, publications, etc.) ───────
+export const documents = pgTable('documents', {
+  id:              serial('id').primaryKey(),
+  title:           text('title').notNull(),
+  category:        text('category').notNull().default('resume'), // 'resume' | 'certificate' | 'transcript' | 'whitepaper' | 'recommendation' | 'other'
+  description:     text('description'),
+  sourceType:      text('source_type').notNull().default('local_upload'), // 'local_upload' | 'gdrive_link' | 'external_url'
+  fileUrl:         text('file_url').notNull(),
+  driveUrl:        text('drive_url'),
+  downloadUrl:     text('download_url').notNull(),
+  previewUrl:      text('preview_url'),
+  fileName:        text('file_name').notNull(),
+  fileSize:        text('file_size'),
+  mimeType:        text('mime_type'),
+  isPrimaryResume: boolean('is_primary_resume').notNull().default(false),
+  sortOrder:       integer('sort_order').notNull().default(0),
+  createdAt:       timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt:       timestamp('updated_at', { withTimezone: true }).defaultNow(),
+});
+
+
 

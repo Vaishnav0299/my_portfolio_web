@@ -49,6 +49,12 @@ export async function warmUpDatabase(): Promise<void> {
     const start = Date.now();
     await client`SELECT 1`;
     console.log(`[DB] Supabase connection pool pre-warmed in ${Date.now() - start}ms`);
+
+    // Dynamically import and trigger auto-migration so tables are created automatically
+    const { autoMigrateSchema } = await import('./autoMigrate.js');
+    await autoMigrateSchema().catch((err) => {
+      console.warn('[DB] Auto-migration warning:', (err as Error).message);
+    });
   } catch (err) {
     console.warn('[DB] Pre-warm query failed:', (err as Error).message);
   }

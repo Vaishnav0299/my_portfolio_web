@@ -17,30 +17,67 @@ import {
   Clock,
   Laptop,
   CheckCircle2,
+  Award,
+  GraduationCap,
 } from 'lucide-react';
+import { api } from '../lib/api';
 
-const cmdItems = [
-  { id: 1, label: 'Home / Hero', target: '/', key: 'H', icon: Home, action: 'nav' },
-  { id: 2, label: 'About Me & Philosophy', target: '/#about', key: 'A', icon: Briefcase, action: 'hash' },
-  { id: 3, label: 'Career & Experience', target: '/#experience', key: 'E', icon: Briefcase, action: 'hash' },
-  { id: 4, label: 'Featured Projects & Mockups', target: '/#projects', key: 'P', icon: FolderGit2, action: 'hash' },
-  { id: 5, label: 'Engineering Services', target: '/#services', key: 'S', icon: CheckCircle2, action: 'hash' },
-  { id: 6, label: 'Skills & Proficiency Matrix', target: '/#skills', key: 'K', icon: Cpu, action: 'hash' },
-  { id: 7, label: 'Technical Writing & Blog', target: '/#writing', key: 'W', icon: BookOpen, action: 'hash' },
-  { id: 8, label: 'Client & Team Reviews', target: '/#testimonials', key: 'R', icon: MessageSquare, action: 'hash' },
-  { id: 9, label: 'What I Am Doing Now', target: '/#now', key: 'N', icon: Clock, action: 'hash' },
-  { id: 10, label: 'Uses, Gear & Software Setup', target: '/#uses', key: 'U', icon: Laptop, action: 'hash' },
-  { id: 11, label: 'Frequently Asked Questions', target: '/#faq', key: 'F', icon: HelpCircle, action: 'hash' },
-  { id: 12, label: 'Contact & Hire Form', target: '/#contact', key: 'C', icon: Mail, action: 'hash' },
-  { id: 14, label: 'Download Resume (PDF)', target: '/resume.pdf', key: 'PDF', icon: FileText, action: 'download' },
-  { id: 15, label: 'Open GitHub Profile', target: 'https://github.com/Vaishnav0299', key: 'GH', icon: Github, action: 'ext' },
-  { id: 16, label: 'Open LinkedIn Profile', target: 'https://www.linkedin.com/in/vaishnav-gaware', key: 'IN', icon: Linkedin, action: 'ext' },
-  { id: 17, label: 'Open Twitter Profile', target: 'https://twitter.com/vaishnav0299', key: 'TW', icon: Twitter, action: 'ext' },
+const staticCmdItems = [
+  { id: 'nav-home', label: 'Home / Hero', target: '/', key: 'H', icon: Home, action: 'nav' },
+  { id: 'nav-about', label: 'About Me & Philosophy', target: '/#about', key: 'A', icon: Briefcase, action: 'hash' },
+  { id: 'nav-exp', label: 'Career & Experience', target: '/#experience', key: 'E', icon: Briefcase, action: 'hash' },
+  { id: 'nav-proj', label: 'Featured Projects & Mockups', target: '/#projects', key: 'P', icon: FolderGit2, action: 'hash' },
+  { id: 'nav-serv', label: 'Engineering Services', target: '/#services', key: 'S', icon: CheckCircle2, action: 'hash' },
+  { id: 'nav-skills', label: 'Skills & Proficiency Matrix', target: '/#skills', key: 'K', icon: Cpu, action: 'hash' },
+  { id: 'nav-blog', label: 'Technical Writing & Blog', target: '/#writing', key: 'W', icon: BookOpen, action: 'hash' },
+  { id: 'nav-rev', label: 'Client & Team Reviews', target: '/#testimonials', key: 'R', icon: MessageSquare, action: 'hash' },
+  { id: 'nav-now', label: 'What I Am Doing Now', target: '/#now', key: 'N', icon: Clock, action: 'hash' },
+  { id: 'nav-uses', label: 'Uses, Gear & Software Setup', target: '/#uses', key: 'U', icon: Laptop, action: 'hash' },
+  { id: 'nav-faq', label: 'Frequently Asked Questions', target: '/#faq', key: 'F', icon: HelpCircle, action: 'hash' },
+  { id: 'nav-contact', label: 'Contact & Hire Form', target: '/#contact', key: 'C', icon: Mail, action: 'hash' },
+  { id: 'ext-gh', label: 'Open GitHub Profile', target: 'https://github.com/Vaishnav0299', key: 'GH', icon: Github, action: 'ext' },
+  { id: 'ext-li', label: 'Open LinkedIn Profile', target: 'https://www.linkedin.com/in/vaishnav-gaware', key: 'IN', icon: Linkedin, action: 'ext' },
+  { id: 'ext-tw', label: 'Open Twitter Profile', target: 'https://twitter.com/vaishnav0299', key: 'TW', icon: Twitter, action: 'ext' },
 ];
 
 export function CommandPalette({ isOpen, onClose }) {
   const [query, setQuery] = useState('');
+  const [items, setItems] = useState(staticCmdItems);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadDynamicItems = async () => {
+      try {
+        const [bioRes, docsRes] = await Promise.allSettled([
+          api.getBio(),
+          api.getDocuments(),
+        ]);
+
+        const resumeUrl = bioRes.status === 'fulfilled' && bioRes.value.data?.resumeUrl ? bioRes.value.data.resumeUrl : '/resume.pdf';
+        const docList = docsRes.status === 'fulfilled' && Array.isArray(docsRes.value.data) ? docsRes.value.data : [];
+
+        const dynamicDocs = [
+          { id: 'doc-resume', label: 'Download Active Resume (PDF)', target: resumeUrl, key: 'RESUME', icon: FileText, action: 'download' },
+          ...docList.map(d => ({
+            id: `doc-${d.id}`,
+            label: `View Document: ${d.title}`,
+            target: d.downloadUrl || d.fileUrl,
+            key: d.category.toUpperCase(),
+            icon: d.category === 'certificate' ? Award : d.category === 'transcript' ? GraduationCap : FileText,
+            action: 'download',
+          })),
+        ];
+
+        setItems([...dynamicDocs, ...staticCmdItems]);
+      } catch {
+        // Keep static
+      }
+    };
+
+    if (isOpen) {
+      loadDynamicItems();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handleGlobalKeyDown = (e) => {
@@ -58,8 +95,9 @@ export function CommandPalette({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const filtered = cmdItems.filter((item) =>
-    item.label.toLowerCase().includes(query.toLowerCase())
+  const filtered = items.filter((item) =>
+    item.label.toLowerCase().includes(query.toLowerCase()) ||
+    item.key?.toLowerCase().includes(query.toLowerCase())
   );
 
   const handleSelect = (item) => {

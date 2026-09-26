@@ -131,4 +131,35 @@ export const api = {
   // Manual DB Sync — force sync between Supabase and local cache
   syncDb: () => apiFetch('/sync/db', { method: 'POST' }, true),
   getDbSyncStatus: () => apiFetch('/sync/db', { method: 'GET' }, true),
+  syncSchema: () => apiFetch('/sync/schema', { method: 'POST' }, true),
+
+
+  // Documents & Credentials (Public & Admin)
+  getDocuments:    (category) => apiFetch(`/documents${category ? `?category=${encodeURIComponent(category)}` : ''}`),
+  getActiveResume: () => apiFetch('/documents/resume'),
+  parseDriveUrl:   (url) => apiFetch('/documents/admin/parse-drive', { method: 'POST', body: JSON.stringify({ url }) }, true),
+  createDriveDoc:  (body) => apiFetch('/documents/admin/link', { method: 'POST', body: JSON.stringify(body) }, true),
+  updateDocument:  (id, body) => apiFetch(`/documents/admin/${id}`, { method: 'PUT', body: JSON.stringify(body) }, true),
+  deleteDocument:  (id) => apiFetch(`/documents/admin/${id}`, { method: 'DELETE' }, true),
+  setPrimaryResume: (id) => apiFetch(`/documents/admin/${id}/set-resume`, { method: 'POST' }, true),
+  uploadDocument: async (formData) => {
+    const token = getAuthToken();
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const response = await fetch(`${BASE_URL}/documents/admin/upload`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    const data = await response.json();
+    const isSuccess = response.ok && (data.success !== false) && (data.ok !== false);
+    if (!isSuccess) {
+      const message = data.error ?? data.message ?? `Upload failed: ${response.status}`;
+      throw new Error(message);
+    }
+    return data;
+  },
 };
+

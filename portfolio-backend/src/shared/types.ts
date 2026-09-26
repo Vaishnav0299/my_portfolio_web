@@ -99,3 +99,26 @@ export interface ApiError {
   error: string;
   statusCode: number;
 }
+
+export type DocumentCategory = 'resume' | 'certificate' | 'transcript' | 'whitepaper' | 'recommendation' | 'other';
+export type DocumentSourceType = 'local_upload' | 'gdrive_link' | 'external_url';
+
+export interface DocumentItem {
+  id: number;
+  title: string;
+  category: DocumentCategory;
+  description?: string;
+  sourceType: DocumentSourceType;
+  fileUrl: string;
+  driveUrl?: string;
+  downloadUrl: string;
+  previewUrl?: string;
+  fileName: string;
+  fileSize?: string;
+  mimeType?: string;
+  isPrimaryResume: boolean;
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+

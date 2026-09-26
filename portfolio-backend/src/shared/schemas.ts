@@ -153,18 +153,46 @@ export const faqSchema = z.object({
   sortOrder: z.number().int().default(0),
 });
 
+export const documentCategoryEnum = z.enum(['resume', 'certificate', 'transcript', 'whitepaper', 'recommendation', 'other']);
+export const documentSourceTypeEnum = z.enum(['local_upload', 'gdrive_link', 'external_url']);
+
+export const documentDriveSchema = z.object({
+  title:           z.string().min(1, 'Title is required'),
+  category:        documentCategoryEnum.default('resume'),
+  description:     z.string().optional().default(''),
+  driveUrl:        z.string().url('A valid Google Drive or external URL is required'),
+  isPrimaryResume: z.boolean().optional().default(false),
+  sortOrder:       z.number().int().default(0),
+});
+
+export const documentUpdateSchema = z.object({
+  title:           z.string().min(1, 'Title is required'),
+  category:        documentCategoryEnum,
+  description:     z.string().optional().default(''),
+  fileUrl:         z.string().optional(),
+  driveUrl:        z.string().optional(),
+  downloadUrl:     z.string().optional(),
+  previewUrl:      z.string().optional(),
+  fileName:        z.string().optional(),
+  isPrimaryResume: z.boolean().optional(),
+  sortOrder:       z.number().int().optional(),
+});
+
 // Inferred TypeScript types from schemas
-export type ContactInput     = z.infer<typeof contactSchema>;
-export type ProjectInput     = z.infer<typeof projectSchema>;
-export type SkillInput       = z.infer<typeof skillSchema>;
-export type TimelineInput    = z.infer<typeof timelineSchema>;
-export type ServiceInput     = z.infer<typeof serviceSchema>;
-export type TestimonialInput = z.infer<typeof testimonialSchema>;
-export type BlogInput        = z.infer<typeof blogSchema>;
-export type BioInput         = z.infer<typeof bioSchema>;
-export type LoginInput       = z.infer<typeof loginSchema>;
-export type SyncBatchInput   = z.infer<typeof syncBatchSchema>;
-export type SiteConfigInput  = z.infer<typeof siteConfigSchema>;
-export type FaqInput         = z.infer<typeof faqSchema>;
+export type ContactInput        = z.infer<typeof contactSchema>;
+export type ProjectInput        = z.infer<typeof projectSchema>;
+export type SkillInput          = z.infer<typeof skillSchema>;
+export type TimelineInput       = z.infer<typeof timelineSchema>;
+export type ServiceInput        = z.infer<typeof serviceSchema>;
+export type TestimonialInput    = z.infer<typeof testimonialSchema>;
+export type BlogInput           = z.infer<typeof blogSchema>;
+export type BioInput            = z.infer<typeof bioSchema>;
+export type LoginInput          = z.infer<typeof loginSchema>;
+export type SyncBatchInput      = z.infer<typeof syncBatchSchema>;
+export type SiteConfigInput     = z.infer<typeof siteConfigSchema>;
+export type FaqInput            = z.infer<typeof faqSchema>;
+export type DocumentDriveInput  = z.infer<typeof documentDriveSchema>;
+export type DocumentUpdateInput = z.infer<typeof documentUpdateSchema>;
+
 
 

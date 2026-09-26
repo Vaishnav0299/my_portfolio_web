@@ -200,6 +200,8 @@ export function Hero() {
             <a
               href={bioData?.resumeUrl || '/resume.pdf'}
               download={`${heroName.replace(/\s+/g, '_')}_Resume.pdf`}
+              target={bioData?.resumeUrl?.startsWith('http') ? '_blank' : undefined}
+              rel="noreferrer"
               className="btn btn-secondary"
               style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.4rem' }}
             >

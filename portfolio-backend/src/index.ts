@@ -15,6 +15,7 @@ import blogRouter         from './routes/blog.js';
 import metaRouter         from './routes/meta.js';
 import configRouter       from './routes/config.js';
 import faqRouter          from './routes/faq.js';
+import documentsRouter    from './routes/documents.js';
 
 const app = new Hono().basePath('/api');
 
@@ -48,6 +49,8 @@ app.route('/blog',         blogRouter);
 app.route('/meta',         metaRouter);
 app.route('/config',       configRouter);
 app.route('/faq',          faqRouter);
+app.route('/documents',    documentsRouter);
+
 
 // ── 404 fallback ────────────────────────────────────────────────────────────
 app.notFound(notFound);
