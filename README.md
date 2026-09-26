@@ -2,7 +2,7 @@
 
 > A modern, production-ready, interactive developer portfolio web application built with **React 18**, **Vite 5**, **React Router v7**, **Three.js WebGL graphics**, and a custom **Glassmorphism CSS Design System**. Designed to showcase engineering projects spanning **Full-Stack Web Development**, **Artificial Intelligence**, **Machine Learning**, and **Data Analytics**.
 >
-> 🌐 **Live Application**: [portfolio-build-by-vaishnav.vercel.app](https://portfolio-build-by-vaishnav.vercel.app)
+> 🌐 **Live Application**: [https://portfolio-vaishnav.me)
 
 ---
 
